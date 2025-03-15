@@ -1,0 +1,89 @@
+/* Footer Main Styles */
+.footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background-color: white;
+  color: black;
+  padding: 0.5rem 0;  /* Height reduce ki */
+  border-top: 2px solid #ff7f00; /* Border thoda patla kiya */
+  text-align: center;
+  font-family: Arial, sans-serif;
+}
+
+/* Footer Container */
+.footer-container {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  max-width: 1000px; /* Width thodi kam ki */
+  margin: 0 auto;
+  padding: 0.5rem;
+}
+
+/* Footer Sections */
+.footer-section {
+  flex: 1;
+  min-width: 200px; /* Min width reduce ki */
+  margin: 0.5rem; /* Margin kam ki */
+}
+
+.footer-section h2 {
+  font-size: 1.2rem; /* Font size thoda kam kiya */
+  font-weight: bold;
+  color: #ff7f00;
+  margin-bottom: 5px; /* Space reduce ki */
+}
+
+.footer-section p,
+.footer-section ul {
+  font-size: 0.8rem; /* Font thoda chhota kiya */
+  color: #555;
+  line-height: 1.4; /* Line spacing reduce ki */
+}
+
+/* Footer Links */
+.footer-section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-section ul li {
+  margin-bottom: 5px; /* Space reduce ki */
+}
+
+.footer-section ul li a {
+  text-decoration: none;
+  color: black;
+  transition: color 0.2s ease-in-out;
+}
+
+.footer-section ul li a:hover {
+  color: #ff7f00;
+}
+
+/* Social Media Icons */
+.footer-icons {
+  display: flex;
+  justify-content: center;
+  gap: 10px; /* Icons ke beech ki space kam ki */
+  margin-top: 0.8rem; /* Space kam ki */
+}
+
+.footer-icons a {
+  color: black;
+  font-size: 1.5rem; /* Icon size chhota kiya */
+  transition: transform 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+
+.footer-icons a:hover {
+  color: #ff7f00;
+  transform: scale(1.05);
+}
+
+/* Footer Bottom */
+.footer-bottom {
+  margin-top: 0.8rem; /* Space reduce ki */
+  font-size: 0.8rem; /* Font size thoda chhota kiya */
+  color: #777;
+}
