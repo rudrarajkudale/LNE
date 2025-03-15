@@ -22,3 +22,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+
+install
+npm install react-icons
+npm i bootstrap
+npm i react-router-dom
