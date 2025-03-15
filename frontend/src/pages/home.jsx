@@ -1,12 +1,12 @@
 import { useState } from 'react'
 
-const Notes=()=> {
+const Home=()=> {
 
   return (
     <>
-     <h1>welcome notes</h1>
+     <h1>welcome</h1>
     </>
   )
 }
 
-export default Notes
+export default Home
