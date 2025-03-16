@@ -1,6 +1,6 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "../styles/login.css"; // Custom CSS
+import "../styles/Login.css";
 import LoginImg from "../assets/loginIn.png";
 
 const Login = () => {
