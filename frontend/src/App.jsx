@@ -3,7 +3,6 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
 import Projects from "./components/Projects";
 import Teaching from "./components/Teaching";
 import Notes from "./components/Notes";
@@ -21,11 +20,8 @@ function App() {
           <Route path="/teaching" element={<Teaching />} />
           <Route path="/notes" element={<Notes />} />
           <Route path="/login" element={<Login />} />
-          
-
         </Routes>
       </div>
-      <Footer />
     </Router>
   );
 }
