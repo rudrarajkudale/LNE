@@ -1,0 +1,35 @@
+.home-container {
+  max-width: 700px;
+  margin: 50px auto;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background: #f8f9fa;
+  text-align: center;
+}
+
+.home-container h1 {
+  color: #007bff;
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+.home-container p {
+  font-size: 18px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.explore-btn {
+  padding: 10px 20px;
+  border: none;
+  background: #007bff;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.explore-btn:hover {
+  background: #0056b3;
+}

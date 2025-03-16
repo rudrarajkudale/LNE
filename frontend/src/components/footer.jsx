@@ -1,5 +1,5 @@
 import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin, FaYoutube, FaEnvelope, FaPhone } from "react-icons/fa";
-import "../styles/footer.css";
+import "../styles/Footer.css";
 
 const Footer = () => {
   return (
@@ -9,8 +9,7 @@ const Footer = () => {
         <div className="footer-section">
           <h2>About Us</h2>
           <p>
-            We provide top-notch services with innovative solutions. Our team is dedicated to delivering
-            the best experience for our users.
+          Welcome to LNE, where learning meets innovation! We provide programming courses, industry-ready projects, and well-structured notes to help you excel in the tech world. Whether you're a beginner or an experienced coder, LNE is your go-to platform for mastering skills and building a strong foundation. Join us and take your coding journey to the next level! 🚀
           </p>
         </div>
 
