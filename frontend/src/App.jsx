@@ -6,8 +6,9 @@ import Navbar from "./components/Navbar";
 import Projects from "./components/Projects";
 import Teaching from "./components/Teaching";
 import Notes from "./components/Notes";
-import Login from './components/Login'
-import Home from './components/Home'
+import Login from "./components/Login";
+import Home from "./components/Home";
+import Register from "./components/Register";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path="/teaching" element={<Teaching />} />
           <Route path="/notes" element={<Notes />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
         </Routes>
       </div>
     </Router>
