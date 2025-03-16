@@ -25,7 +25,7 @@ function App() {
 
         </Routes>
       </div>
-      <Footer />
+      {/* <Footer />  jr footer sagli kd disla pahije trch comment off kr  */}
     </Router>
   );
 }

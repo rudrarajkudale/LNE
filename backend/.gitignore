@@ -1,0 +1,2 @@
+install
+npm install express passport passport-local bcryptjs jsonwebtoken mongoose cors dotenv
