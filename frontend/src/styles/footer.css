@@ -1,89 +1,112 @@
-/* Footer Main Styles */
+:root {
+  --yellow-color: #f5b820;
+  --black-color: black;
+  --white-color: white;
+}
+
 .footer {
-  width: 100vw;  /* Viewport width ensure karega */
-  background-color: white;
-  color: black;
-  padding: 0.5rem 0;
-  border-top: 2px solid #ff7f00;
-  text-align: center;
-  font-family: Arial, sans-serif;
-  position: relative;  /* Ensure position is correct */
+  height: 12rem;
+  width: 100%;
+  background: var(--white-color);
+  color: var(--black-color);
+  padding: 20px 40px;
+  border-top: 3px solid var(--yellow-color);
+  box-shadow: 0px -4px 10px rgba(255, 255, 255, 0.1);
+  position: absolute;
+  bottom: 0;
   left: 0;
 }
 
-/* Footer Container */
 .footer-container {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;  /* Centers content horizontally */
+  align-items: center;      /* Centers content vertically */
+  text-align: center;
   flex-wrap: wrap;
-  width: 100%; /* Width thodi kam ki */
-  margin: 0 auto;
-  padding: 0.5rem;
 }
 
-/* Footer Sections */
 .footer-section {
   flex: 1;
-  width: 100%; /* Min width reduce ki */
-  margin: 0.5rem; /* Margin kam ki */
+  min-width: 200px;
+  margin: 10px;
+  text-align: center; /* Ensures text inside is centered */
 }
 
 .footer-section h2 {
-  font-size: 1.2rem; /* Font size thoda kam kiya */
+  color: #d36f02;
+  font-size: 1rem;
   font-weight: bold;
-  color: #ff7f00;
-  margin-bottom: 5px; /* Space reduce ki */
+  margin-bottom: 10px;
 }
 
-.footer-section p,
-.footer-section ul {
-  font-size: 0.8rem; /* Font thoda chhota kiya */
-  color: #555;
-  line-height: 1.4; /* Line spacing reduce ki */
+.footer-section img {
+  width: 8rem !important;
 }
 
-/* Footer Links */
 .footer-section ul {
   list-style: none;
   padding: 0;
 }
 
-.footer-section ul li {
-  margin-bottom: 5px; /* Space reduce ki */
-}
-
 .footer-section ul li a {
+  color: var(--black-color);
   text-decoration: none;
-  color: black;
-  transition: color 0.2s ease-in-out;
+  font-size: 0.9rem;
+  transition: 0.3s ease-in-out;
 }
 
 .footer-section ul li a:hover {
-  color: #ff7f00;
+  color: var(--yellow-color);
+  text-shadow: 0 0 8px var(--yellow-color);
 }
 
-/* Social Media Icons */
 .footer-icons {
   display: flex;
-  justify-content: center;
-  gap: 10px; /* Icons ke beech ki space kam ki */
-  margin-top: 0.8rem; /* Space kam ki */
+  gap: 15px;
+  justify-content: center; /* Centers icons horizontally */
+  align-items: center; /* Ensures vertical alignment */
+  position: relative;
+  top: -1rem;
 }
 
 .footer-icons a {
-  color: black;
-  font-size: 1.5rem; /* Icon size chhota kiya */
-  transition: transform 0.2s ease-in-out, color 0.2s ease-in-out;
+  color: var(--yellow-color);
+  font-size: 1.5rem;
+  transition: 0.3s ease-in-out;
 }
 
 .footer-icons a:hover {
-  color: #ff7f00;
-  transform: scale(1.05);
+  color: #d36f02;;
+  text-shadow: 0 0 8px var(--yellow-color);
 }
 
-/* Footer Bottom */
-.footer-bottom {
-  margin-top: 0.8rem; /* Space reduce ki */
-  font-size: 0.8rem; /* Font size thoda chhota kiya */
-  color: #777;
+.footer img {
+  width: 80px;
+  height: auto;
+  margin-bottom: 10px;
+}
+
+.footer-section p {
+  font-size: 0.9rem;
+  display: flex;
+  justify-content: center; /* Centers text horizontally */
+  align-items: center; /* Centers text vertically */
+  gap: 5px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .footer {
+    padding: 20px;
+    text-align: center;
+  }
+
+  .footer-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .footer-section {
+    margin-bottom: 20px;
+  }
 }
