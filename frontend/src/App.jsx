@@ -2,13 +2,13 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
-import Navbar from "./components/navbar";
-import Footer from "./components/footer";
-import Projects from "./pages/projects";
-import Teaching from "./pages/teaching";
-import Notes from "./pages/notes";
-import Login from './pages/login'
-import Home from './pages/home'
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
+import Projects from "./components/Projects";
+import Teaching from "./components/Teaching";
+import Notes from "./components/Notes";
+import Login from './components/Login'
+import Home from './components/Home'
 
 function App() {
   return (

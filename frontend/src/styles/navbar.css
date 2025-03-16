@@ -1,72 +1,99 @@
-/* ---- Navbar Styling ---- */
 .navbar {
-    width: 100%;
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 1000;
-    background: white !important;
-    color: black;
-    padding: 10px 20px;
-    box-shadow: 0px 4px 10px rgba(255, 255, 255, 0.1);
-  }
-  
-  /* Navbar Brand (Logo) */
-  .navbar-brand img {
-    max-height: 50px; /* Adjust size */
-  }
-  
-  /* Navbar Items (Align Right) */
-  .navbar-collapse {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-  }
-  
-  .navbar-nav {
-    margin-left: 850px; /* Move items to right */
-    display: flex;
-    gap: 20px;
-  }
-  
-  .navbar-nav .nav-item {
-    margin-right: 30px;
-  }
-  
-  .navbar-nav .nav-link {
-    color: black !important;
-    font-weight: 500;
-    font-size: 16px;
-    transition: 0.3s;
-  }
-  
-  .navbar-nav .nav-link:hover {
-    color: orange !important;
-  }
-  
-  /* Login Button */
- 
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  background: white !important;
+  color: black;
+  padding: 10px 20px;
+  box-shadow: 0px 4px 10px rgba(255, 255, 255, 0.1);
+  border-bottom: 3px solid #f5b820;
+}
 
-  
-  /* Responsive Navbar for Mobile */
-  @media (max-width: 768px) {
-    .navbar {
+.navbar-brand img {
+  max-height: 50px;
+}
+
+.navbar-collapse {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.navbar-nav {
+  margin-left: auto;
+  display: flex;
+  gap: 10px;
+}
+
+.navbar-nav .nav-item {
+  position: relative;
+  padding: 0 15px;
+}
+
+.navbar-nav .nav-link {
+  color: black !important;
+  font-weight: 500;
+  font-size: 16px;
+  transition: 0.3s;
+  position: relative;
+}
+
+.navbar-nav .nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -5px;
+  width: 0;
+  height: 2px;
+  background-color: #f5b820;
+  transition: width 0.3s ease-in-out;
+}
+
+.navbar-nav .nav-link:hover {
+  color: #f5b820 !important;
+  text-shadow: 0 0 8px #f5b820;
+}
+
+.navbar-nav .nav-link:hover::after {
+  width: 100%;
+}
+
+.btn{
+  width: 5rem;
+}
+
+.btn-outline-warning {
+  color: #f5b820;
+  border: 2px solid #f5b820;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.btn-outline-warning:hover {
+  background-color: #f5b820;
+  color: black;
+  box-shadow: 0 0 10px #f5b820;
+}
+
+@media (max-width: 768px) {
+  .navbar {
       padding: 10px;
-    }
-  
-    .navbar-collapse {
+  }
+
+  .navbar-collapse {
       flex-direction: column;
       align-items: flex-start;
-    }
-  
-    .navbar-nav {
+  }
+
+  .navbar-nav {
       text-align: left;
       margin-left: 0;
-    }
-  
-    .btn-warning {
+  }
+
+  .btn-warning {
       width: 100%;
       margin-top: 10px;
-    }
   }
-  
+}
