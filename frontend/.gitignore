@@ -28,3 +28,8 @@ install
 npm install react-icons
 npm i bootstrap
 npm i react-router-dom
+npm i axios
+# npm install -D tailwindcss postcss autoprefixer
+# npx tailwindcss init -p
+
+

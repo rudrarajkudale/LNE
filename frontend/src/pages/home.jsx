@@ -1,10 +1,13 @@
 import { useState } from 'react'
+import Navbar from '../components/navbar'
+import Footer from '../components/footer'
 
 const Home=()=> {
 
   return (
     <>
-     <h1>welcome</h1>
+    <Navbar/>
+    <Footer/>
     </>
   )
 }
