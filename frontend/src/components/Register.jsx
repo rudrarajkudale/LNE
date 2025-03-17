@@ -4,6 +4,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "../styles/register.css";
 import RegisterImg from "../assets/registerImg.png";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 const Register = () => {
   const [formData, setFormData] = useState({
     fullName: "",
@@ -19,11 +21,15 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/register", formData);
+      await axios.post(`${BACKEND_URL}/api/auth/register`, formData);
       alert("Registration successful!");
     } catch (error) {
-      alert(error.response.data.message || "Registration failed");
+      alert(error.response?.data?.message || "Registration failed");
     }
+  };
+
+  const handleGoogleSignIn = () => {
+    window.location.href = `${BACKEND_URL}/api/auth/google`;
   };
 
   return (
@@ -56,22 +62,30 @@ const Register = () => {
 
               <div className="mb-2">
                 <label className="form-label">Why do you want to join?</label>
-                <select className="form-control" name="reasonToJoin" onChange={handleChange} required>
-                  <option disabled selected>-- Select an Option --</option>
-                  <option>I need a project</option>
-                  <option>I want to explore notes</option>
-                  <option>I want to start learning</option>
-                  <option>Other</option>
+                <select 
+                className="form-control" 
+                name="reasonToJoin" 
+                value={formData.reasonToJoin || ""} 
+                onChange={handleChange} 
+                required
+                >
+                  <option value="" disabled>-- Select an Option --</option>
+                  <option value="I need a project">I need a project</option>
+                  <option value="I want to explore notes">I want to explore notes</option>
+                  <option value="I want to start learning">I want to start learning</option>
+                  <option value="Other">Other</option>
                 </select>
               </div>
-
-              <button className="btn btn-orange w-100 mb-2">Sign Up</button>
-
+              <button type="submit" className="btn btn-orange w-100 mb-2">Sign Up</button>
+              <button type="button" className="btn btn-outline-orange w-100 d-flex align-items-center justify-content-center" onClick={handleGoogleSignIn}>
+                <img src="https://img.icons8.com/color/16/000000/google-logo.png" className="me-1" alt="Google" />
+                Sign up with Google
+              </button>
               <p className="mt-2 text-center small">
-              Already have an account? <a href="/login" className="text-orange">Login</a>
+                Already have an account? <a href="/login" className="text-orange">Login</a>
               </p>
             </form>
-            
+
           </div>
         </div>
       </div>

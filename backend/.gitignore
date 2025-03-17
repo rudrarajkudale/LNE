@@ -1,3 +1,2 @@
-install
-npm install express mongoose dotenv bcryptjs jsonwebtoken passport passport-jwt passport-local cors
-npm install express mongoose cors dotenv bcryptjs jsonwebtoken passport passport-google-oauth20
+node_modules/
+# .env

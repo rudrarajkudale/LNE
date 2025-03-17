@@ -1,43 +1,46 @@
 import express from "express";
-import User from "../models/User.js";
-import jwt from "jsonwebtoken";
+import passport from "passport";
 import bcrypt from "bcryptjs";
+import User from "../models/User.js";
 
 const router = express.Router();
+const FRONTEND_URL = process.env.FRONTEND_URL;
 
-// 🔹 User Registration
 router.post("/register", async (req, res) => {
+  const { fullName, email, password, reasonToJoin } = req.body;
+
   try {
-    const { fullName, email, password, reasonToJoin } = req.body;
-    
-    const existingUser = await User.findOne({ email });
-    if (existingUser) return res.status(400).json({ message: "User already exists" });
+    let user = await User.findOne({ email });
+    if (user) return res.status(400).json({ message: "User already exists" });
 
-    const user = await User.create({ fullName, email, password, reasonToJoin });
+    const hashedPassword = await bcrypt.hash(password, 10);
+    user = new User({ fullName, email, password: hashedPassword, reasonToJoin });
 
-    res.status(201).json({ message: "User registered successfully", user });
-  } catch (error) {
-    res.status(500).json({ message: "Error in registration", error });
+    await user.save();
+    res.json({ message: "Registration successful" });
+  } catch (err) {
+    console.error("Error in /register route:", err);
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 });
 
-// 🔹 User Login
-router.post("/login", async (req, res) => {
-  try {
-    const { email, password } = req.body;
+router.post("/login", passport.authenticate("local"), (req, res) => {
+  res.json({ message: "Login successful", user: req.user, redirect: FRONTEND_URL });
+});
 
-    const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ message: "Invalid credentials" });
+router.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
-
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
-
-    res.json({ token, user });
-  } catch (error) {
-    res.status(500).json({ message: "Error in login", error });
+router.get("/google/callback", passport.authenticate("google", { failureRedirect: "/" }),
+  (req, res) => {
+    res.redirect(FRONTEND_URL);
   }
+);
+
+router.get("/logout", (req, res) => {
+  req.logout((err) => {
+    if (err) return res.status(500).json({ message: "Logout failed" });
+    res.json({ message: "Logout successful" });
+  });
 });
 
 export default router;
