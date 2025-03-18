@@ -26,31 +26,20 @@
 .project-card {
   box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
-  overflow: hidden;
-  transition: height 0.3s ease-in-out, transform 0.3s ease-in-out;
-  width: 350px; /* Compact size */
-  height: 200px; /* Default chhota size */
+  transition: transform 0.3s ease-in-out;
+  width: 350px;
+  min-height: 200px; /* Default chhota size */
   margin: auto;
   text-align: center;
   position: relative;
 }
 
 .project-card:hover {
-  height: 350px; /* Hover hone par bada hoga */
+  min-height: 350px; /* Hover hone par bada hoga */
   transform: translateY(-3px);
   box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.15);
 }
 
-/* Project Logo - Smaller */
-.project-logo {
-  width: 60px; /* Reduced size */
-  height: 60px;
-  margin: 10px auto;
-  display: block;
-  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.15);
-}
-
-/* Footer Styling */
 .project-footer {
   opacity: 0;
   transform: translateY(-10px);
@@ -61,6 +50,21 @@
   border-top: 1px solid #ddd;
   border-radius: 0 0 10px 10px;
 }
+
+.project-card:hover .project-footer {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Project Logo - Smaller */
+.project-logo {
+  width: 100%; /* Reduced size */
+
+  margin: 10px auto;
+  display: block;
+  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.15);
+}
+
 
 .project-card:hover .project-footer {
   opacity: 1;

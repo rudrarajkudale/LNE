@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../styles/Projects.css";
 import projects from "../data/projects";
+import emsImg from '../assets/ems.png'
 
 export default function Projects() {
   const [searchTerm, setSearchTerm] = useState("");
