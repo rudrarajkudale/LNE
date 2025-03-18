@@ -4,15 +4,17 @@ import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../styles/Navbar.css";
 import Logo from "../assets/Logo.png";
+import FlashMsg from "../utils/FlashMsg";
 
 const Navbar = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const [flashMessage, setFlashMessage] = useState(null);
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const token = localStorage.getItem("token"); // Use token for API auth
+        const token = localStorage.getItem("token");
         if (!token) return;
 
         const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/auth/user`, {
@@ -26,6 +28,16 @@ const Navbar = () => {
     };
 
     fetchUser();
+  }, []);
+
+  useEffect(() => {
+    const storedMessage = localStorage.getItem("flashMessage");
+    if (storedMessage) {
+      const { type, message } = JSON.parse(storedMessage);
+      setFlashMessage({ type, message });
+      localStorage.removeItem("flashMessage");
+      setTimeout(() => setFlashMessage(null), 3000);
+    }
   }, []);
 
   const handleLogout = () => {
@@ -62,6 +74,8 @@ const Navbar = () => {
           )}
         </div>
       </div>
+
+      {flashMessage && <FlashMsg message={flashMessage.message} type={flashMessage.type} onClose={() => setFlashMessage(null)} />}
     </nav>
   );
 };

@@ -4,6 +4,7 @@ import cors from "cors";
 import session from "express-session";
 import passport from "passport";
 import cookieParser from "cookie-parser";
+import connectFlash from "connect-flash";
 import connectDB from "./config/db.js";
 import { setupPassport } from "./config/passport.js";
 import authRoutes from "./routes/authRoutes.js";
@@ -28,12 +29,23 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-      httpOnly: true
-    }
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      httpOnly: true,
+    },
   })
 );
+
+app.use(connectFlash());
+
+app.use((req, res, next) => {
+  res.locals.success = req.flash("success");
+  res.locals.error = req.flash("error");
+  res.locals.currUser = req.user;
+  res.locals.admin = process.env.ADMIN_ID;
+  res.locals.admin_username = process.env.ADMIN_USERNAME;
+  res.locals.adminPassword = process.env.ADMIN_PASSWORD;
+  next();
+});
 
 setupPassport(passport);
 app.use(passport.initialize());
@@ -43,12 +55,13 @@ app.use("/api/auth", authRoutes);
 
 app.get("/", (req, res) => res.send("Welcome to the API 🚀"));
 
-app.all("*",(req,res, next) => {
-  next(new expressError(404 , "page not found"));
+app.all("*", (req, res) => {
+  res.status(404).json({ error: "Page not found" });
 });
-app.use((err,req,res,next) => { 
-  let {statusCode = 500, message = "Something went wrong"} = err;
-  res.status(statusCode).render("listings/error.ejs", {message});
+
+app.use((err, req, res, next) => {
+  const { statusCode = 500, message = "Something went wrong" } = err;
+  res.status(statusCode).json({ error: message });
 });
 
 const PORT = process.env.PORT || 5000;
