@@ -57,11 +57,7 @@ const Login = () => {
                 <input type="password" className="form-control" placeholder="Enter password" value={password} onChange={(e) => setPassword(e.target.value)} required />
               </div>
 
-              <div className="d-flex justify-content-between align-items-center mb-2">
-                <div className="form-check">
-                  <input type="checkbox" className="form-check-input" id="rememberMe" />
-                  <label className="form-check-label small" htmlFor="rememberMe">Remember me</label>
-                </div>
+              <div className="text-end mb-2">
                 <a href="/forgot-password" className="text-orange small">Forgot password?</a>
               </div>
 

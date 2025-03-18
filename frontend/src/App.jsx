@@ -9,6 +9,9 @@ import Notes from "./components/Notes";
 import Login from "./components/Login";
 import Home from "./components/Home";
 import Register from "./components/Register";
+import ForgotPassword from "./components/Forgetpassword";
+import ResetPassword from "./components/ResetPassword";
+import Contactus from "./components/Contactus";
 
 function App() {
   return (
@@ -22,6 +25,9 @@ function App() {
           <Route path="/notes" element={<Notes />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/contactus" element={<Contactus />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
         </Routes>
       </div>
     </Router>

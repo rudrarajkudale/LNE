@@ -1,0 +1,110 @@
+<% layout("layout/boilerplate") %>
+<div class="min-vh-75">
+    <div class="contain-filter">
+        <div class="filters ms-3">
+            <a href="/listings">
+                <div class="filter">
+                    <button><i class="fa-solid fa-earth-americas"></i></button>
+                    <p>All</p>
+                </div>
+            </a>
+            <a href="/listings">
+                <div class="filter">
+                    <button><i class="bi bi-fire"></i></button>
+                    <p>Trending</p>
+                </div>
+            </a> 
+            <a href="/listings/category?category=Rooms">
+                <div class="filter">
+                    <button><i class="fa-solid fa-house"></i></button>
+                    <p>Rooms</p>
+                </div>
+            </a>        
+            <a href="/listings/category?category=IconicRooms">
+                <div class="filter">
+                    <button><i class="fa-solid fa-city"></i></button>
+                    <p name="category">Iconic Rooms</p>
+                </div>
+            </a>
+            <a href="/listings/category?category=Mountains">
+            <div class="filter">
+                <button><i class="fa-solid fa-mountain"></i></button>
+                <p>Mountains</p>
+                </div>
+            </a>
+            <a href="/listings/category?category=Castles">
+                <div class="filter">
+                    <button><i class="fa-solid fa-chess-rook"></i></button>
+                    <p>Castles</p>
+                </div>
+            </a>
+            <a href="/listings/category?category=Amazing Pools">
+            <div class="filter">
+                <button><i class="fa-solid fa-person-swimming"></i></button>
+                <p>Amazing Pools</p>
+                </div>
+            </a>
+            <a href="/listings/category?category=Camping">
+            <div class="filter">
+                <button><i class="fa-solid fa-campground"></i></button>
+                <p>Camping</p>
+                </div>
+            </a>
+            <a href="/listings/category?category=Farm">
+            <div class="filter">
+                <button><i class="fa-solid fa-cow"></i></button>
+                <p>Farm</p>
+                </div>
+            </a>
+            <a href="/listings/category?category=Arctic">
+            <div class="filter">
+                <button><i class="fa-solid fa-snowflake"></i></button>
+                <p>Arctic</p>
+            </div>
+            </a>
+            <a href="/listings/category?category=Boat">
+            <div class="filter">
+                <button><i class="fa-solid fa-ship"></i></button>
+                <p>Boat</p>
+            </div>
+            </a>
+            <a href="/listings/category?category=Domes">
+                <div class="filter">
+                    <button><i class="fa-solid fa-igloo"></i></button>
+                    <p>Domes</p>
+                </div>
+            </a>
+        </div>
+        <div id="price-toggle">
+            <div class="form-check form-switch form-check-reverse tax">
+                <input class="form-check-input" type="checkbox" id="flexSwitchCheckReverse">
+                <label class="form-check-label" for="flexSwitchCheckReverse">Include taxes</label>
+            </div>
+        </div>
+        <% if(currUser && currUser._id.equals(admin)) {%>
+            <div id="price-toggle" class="ms-3 admin-btn">
+                <a href="/admin">Admin Dashboard</a>
+            </div>
+        <% } %>
+    </div>
+    <div class="mt-4 index-cards">
+        <% for(List of allListings) {%>
+            <a href="/listings/<%= List._id %>">
+                <div class="icard" style="width: 18rem;">
+                    <img src="<%= List.image.url %>" class="card-img-top" alt="<%= List.title %>">
+                    <h5 class="icard-title"><%= List.title %></h5>
+                    <p class="icard-text"><span id="price">&#8377; <%= List.price.toLocaleString("en-IN") %></span>
+                        <span id="GST">&#8377; <%= ((List.price) + List.price * 18 / 100).toLocaleString("en-IN") %></span> 
+                        / per day
+                    </p>
+                </div>  
+            </a>            
+        <% } %>
+    </div>
+</div>
+
+
+            
+
+                
+            

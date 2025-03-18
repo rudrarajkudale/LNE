@@ -5,6 +5,8 @@ const UserSchema = new mongoose.Schema({
   email: { type: String, unique: true },
   password: String,
   googleId: String,
+  resetPasswordToken: String,
+  resetPasswordExpires: Date,
   reasonToJoin: {
     type: String,
     required: true,
