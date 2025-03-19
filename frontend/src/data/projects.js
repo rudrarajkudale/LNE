@@ -14,7 +14,7 @@ const projects = [
   { 
     id: 2, 
     logo:"https://www.crmjetty.com/wp-content/uploads/2021/02/Online_Travel_Portal_The_Future_of_Travel_Business-F.png",
-    name: "Adventure Abode",  
+    name: "WonderLust",  
     description: "A travel booking platform with immersive experiences.", 
     technologies: ["Next.js", "Node.js", "Tailwind CSS","Bootstrap","Express.js","Mongodb","MERN STACK"],
     liveDemo: "https://adventure-abode.vercel.app",
