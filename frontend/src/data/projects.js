@@ -1,9 +1,10 @@
 const projects = [
   { 
     id: 1, 
+    logo:"https://d6xcmfyh68wv8.cloudfront.net/learn-content/uploads/2023/11/Employee-Management-System.png",
     name: "Employee Management System",  
     description: "A system to manage employee records efficiently.", 
-    technologies: ["React", "Node.js", "MongoDB"],
+    technologies: ["React", "Redux", "Local Storage","Tailwind Css"],
     liveDemo: "https://ems-live.vercel.app",
     screenshots: [
       "https://your-image-host.com/screenshot1.png", 
@@ -12,9 +13,10 @@ const projects = [
   },
   { 
     id: 2, 
-    name: "Adventure Abode",  
+    logo:"https://www.crmjetty.com/wp-content/uploads/2021/02/Online_Travel_Portal_The_Future_of_Travel_Business-F.png",
+    name: "WonderLust",  
     description: "A travel booking platform with immersive experiences.", 
-    technologies: ["Next.js", "Firebase", "Tailwind CSS"],
+    technologies: ["Next.js", "Node.js", "Tailwind CSS","Bootstrap","Express.js","Mongodb","MERN STACK"],
     liveDemo: "https://adventure-abode.vercel.app",
     screenshots: [
       "https://your-image-host.com/screenshot3.png", 
@@ -24,47 +26,17 @@ const projects = [
   { 
     id: 3, 
     name: "Gamified Coding",  
+    logo:"https://bairesdev.mo.cloudinary.net/blog/2024/11/webgpu-game-development.jpg?tx=w_1920,q_auto",
     description: "An interactive coding challenge platform.", 
-    technologies: ["React", "Express", "Socket.io"],
+    technologies: ["MERN STACK","Socket.io"],
     liveDemo: "https://gamify-code.netlify.app",
     screenshots: [
       "https://your-image-host.com/screenshot5.png", 
       "https://your-image-host.com/screenshot6.png"
     ]
   },
-  { 
-    id: 4, 
-    name: "Tesla EV Dashboard",  
-    description: "A dashboard for monitoring Tesla electric vehicle performance.", 
-    technologies: ["React", "GraphQL", "D3.js"],
-    liveDemo: "https://tesla-ev-dashboard.com",
-    screenshots: [
-      "https://your-image-host.com/screenshot7.png", 
-      "https://your-image-host.com/screenshot8.png"
-    ]
-  },
-  { 
-    id: 5, 
-    name: "Google AI Assistant",  
-    description: "A voice assistant AI model for real-time conversation.", 
-    technologies: ["Python", "TensorFlow", "Flask"],
-    liveDemo: "https://google-ai-assistant.com",
-    screenshots: [
-      "https://your-image-host.com/screenshot9.png", 
-      "https://your-image-host.com/screenshot10.png"
-    ]
-  },
-  { 
-    id: 6, 
-    name: "Amazon Smart Cart",  
-    description: "An AI-powered shopping cart for automated checkouts.", 
-    technologies: ["AWS", "IoT", "Machine Learning"],
-    liveDemo: "https://amazon-smart-cart.com",
-    screenshots: [
-      "https://your-image-host.com/screenshot11.png", 
-      "https://your-image-host.com/screenshot12.png"
-    ]
-  }
+
+
 ];
 
 export default projects;

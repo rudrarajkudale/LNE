@@ -8,6 +8,7 @@ import connectFlash from "connect-flash";
 import connectDB from "./config/db.js";
 import { setupPassport } from "./config/passport.js";
 import authRoutes from "./routes/authRoutes.js";
+import projectRoutes from "./routes/projectRoutes.js";
 
 dotenv.config();
 
@@ -63,6 +64,8 @@ app.use((err, req, res, next) => {
   const { statusCode = 500, message = "Something went wrong" } = err;
   res.status(statusCode).json({ error: message });
 });
+app.use("/api/projects", projectRoutes);
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
