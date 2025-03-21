@@ -12,6 +12,7 @@ import Register from "./components/Register";
 import ForgotPassword from "./components/Forgetpassword";
 import ResetPassword from "./components/ResetPassword";
 import Contactus from "./components/Contactus";
+import CreatePost from "./components/CreatePost";
 
 function App() {
   return (
@@ -28,6 +29,8 @@ function App() {
           <Route path="/contactus" element={<Contactus />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
+          <Route path="/createpost" element={<CreatePost/>} />
+
 
         </Routes>
       </div>
