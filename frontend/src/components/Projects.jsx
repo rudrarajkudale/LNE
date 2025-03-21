@@ -1,215 +1,145 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "../styles/Projects.css";
+import { useEffect, useState } from "react";
+import SearchBarWithButtons from '../components/SearchBarWithButtons';
 
-export default function Projects() {
-  const [searchTerm, setSearchTerm] = useState("");
+const Project = () => {
   const [projects, setProjects] = useState([]);
-  const [showForm, setShowForm] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
-  const [flashMessage, setFlashMessage] = useState({ message: "", type: "" });
-
-  const [newProject, setNewProject] = useState({
-    name: "",
-    logo: "",
-    description: "",
-    technologies: "",
-    liveDemo: "",
-    screenshots: "",
-  });
-
-  const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/projects")
-      .then((res) => res.json())
-      .then((data) => setProjects(data))
-      .catch((err) => console.error("Error fetching projects:", err));
+    const savedProjects = JSON.parse(localStorage.getItem("projects")) || [];
+    setProjects(savedProjects);
   }, []);
 
-  const handleFormSubmit = (e) => {
-    e.preventDefault();
-    fetch("http://localhost:5000/api/projects", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newProject),
-    })
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error("Failed to add project");
-        }
-        return res.json();
-      })
-      .then((data) => {
-        setProjects([...projects, data]);
-        setShowForm(false);
-        setNewProject({
-          name: "",
-          logo: "",
-          description: "",
-          technologies: "",
-          liveDemo: "",
-          screenshots: "",
-        });
-
-        setFlashMessage({ message: "Project added successfully!", type: "success" });
-        setTimeout(() => setFlashMessage({ message: "", type: "" }), 3000);
-      })
-      .catch((err) => {
-        console.error("Error adding project:", err);
-        setFlashMessage({ message: "Failed to add project!", type: "error" });
-        setTimeout(() => setFlashMessage({ message: "", type: "" }), 3000);
-      });
-  };
-
-  const handleCancel = () => {
-    setShowConfirm(true);
-  };
-
-  const confirmCancel = () => {
-    setShowForm(false);
-    setShowConfirm(false);
-  };
-
   return (
-    <div className="container position-relative py-4">
-      {flashMessage.message && (
-        <div className={`flash-message ${flashMessage.type}`}>
-          {flashMessage.message}
-        </div>
-      )}
+    <div className="container mt-4">
+      <SearchBarWithButtons />
 
-      <div className="d-flex justify-content-between align-items-center position-sticky top-0 search-bar">
-        <input
-          type="text"
-          placeholder="Search Projects..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="form-control search-input"
-        />
-        <div>
-        <button onClick={() => navigate('/contactus')} className="btn-primary-custom me-2">
-          Grab Your Project
-        </button>
-        <button onClick={() => setShowForm(true)} className="btn-primary-custom me-2">
-          Create Project
-        </button>
-        </div>
-      </div>
-
-      <div className="row row-cols-1 row-cols-md-3 g-4 mt-4">
-        {projects
-          .filter((project) =>
-            project.name.toLowerCase().includes(searchTerm.toLowerCase())
-          )
-          .map((project) => (
-            <div key={project._id} className="col">
+      <h2 className="text-center mb-4">Projects</h2>
+      <div className="row">
+        {projects.length > 0 ? (
+          projects.map((project, index) => (
+            <div key={index} className="col-md-4">
               <div className="card project-card">
-                <div className="card-header">
-                  <img src={project.logo} alt={project.name} className="project-logo" />
-                </div>
-                <div className="card-body">
-                  <h5 className="card-title">{project.name}</h5>
+                <img src={project.imgSrc} className="card-img-top project-image" alt={project.title} />
+                <div className="card-body project-details">
+                  <h5 className="card-title">{project.title}</h5>
+                  <p className="card-text">{project.description}</p>
+
+                  {/* Tech Used Section */}
+                  <div className="tech-used">
+                    {project.technologies.split(',').map((tech, idx) => (
+                      <span key={idx} className="tech-chip">{tech.trim()}</span>
+                    ))}
+                  </div>
+
+                  {/* Buttons Section */}
+                  <div className="d-flex justify-content-between mt-3">
+                    {project.liveDemoSrc && (
+                      <a href={project.liveDemoSrc} target="_blank" rel="noopener noreferrer" className="btn live-demo-btn">🚀 Live Demo</a>
+                    )}
+                    <button className="btn snapshot-btn">📸 Snapshot</button>
+                  </div>
                 </div>
               </div>
             </div>
-          ))}
+          ))
+        ) : (
+          <p className="text-center">No projects found.</p>
+        )}
       </div>
 
-      {showForm && (
-        <div className="project-form-overlay">
-          <div className="project-form">
-            <h3 className="text-center">Create New Project</h3>
-            <form onSubmit={handleFormSubmit}>
-              <input
-                type="text"
-                placeholder="Project Name"
-                value={newProject.name}
-                onChange={(e) =>
-                  setNewProject({ ...newProject, name: e.target.value })
-                }
-                required
-                className="form-control mb-2"
-              />
-              <input
-                type="text"
-                placeholder="Image URL"
-                value={newProject.logo}
-                onChange={(e) =>
-                  setNewProject({ ...newProject, logo: e.target.value })
-                }
-                required
-                className="form-control mb-2"
-              />
-              <textarea
-                placeholder="Description"
-                value={newProject.description}
-                onChange={(e) =>
-                  setNewProject({ ...newProject, description: e.target.value })
-                }
-                required
-                className="form-control mb-2"
-              />
-              <input
-                type="text"
-                placeholder="Technologies (comma-separated)"
-                value={newProject.technologies}
-                onChange={(e) =>
-                  setNewProject({ ...newProject, technologies: e.target.value })
-                }
-                required
-                className="form-control mb-2"
-              />
-              <input
-                type="text"
-                placeholder="Live Demo URL"
-                value={newProject.liveDemo}
-                onChange={(e) =>
-                  setNewProject({ ...newProject, liveDemo: e.target.value })
-                }
-                required
-                className="form-control mb-2"
-              />
-              <input
-                type="text"
-                placeholder="Snapshot URL"
-                value={newProject.screenshots}
-                onChange={(e) =>
-                  setNewProject({ ...newProject, screenshots: e.target.value })
-                }
-                required
-                className="form-control mb-3"
-              />
+      <style>
+        {`
+          .project-card {
+            position: relative;
+            overflow: hidden;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.3s ease-in-out;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+          }
 
-              <div className="d-flex justify-content-between">
-                <button type="submit" className="btn btn-outline-primary">
-                  Add Project
-                </button>
-                <button type="button" onClick={handleCancel} className="btn btn-outline-danger">
-                  Cancel
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+          .project-card:hover {
+            transform: scale(1.02);
+          }
 
-      {showConfirm && (
-        <div className="confirm-modal">
-          <div className="modal-content">
-            <h4>Are you sure you want to cancel?</h4>
-            <div className="modal-buttons">
-              <button className="btn btn-danger" onClick={confirmCancel}>
-                Yes
-              </button>
-              <button className="btn btn-secondary" onClick={() => setShowConfirm(false)}>
-                No
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+          .project-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.3s ease-in-out;
+            border-radius: 10px;
+          }
+
+          .project-card:hover .project-image {
+            transform: scale(1.1);
+          }
+
+          .project-details {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            color: white;
+            padding: 15px;
+            opacity: 0;
+            transform: translateY(100%);
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+            border-radius: 0 0 10px 10px;
+          }
+
+          .project-card:hover .project-details {
+            opacity: 1;
+            transform: translateY(0);
+          }
+
+          /* Tech Used Styling */
+          .tech-used {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+          }
+
+          .tech-chip {
+            background: #17a2b8;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+          }
+
+          /* Buttons Styling */
+          .btn {
+            padding: 8px 16px;
+            font-size: 14px;
+            border-radius: 25px;
+            font-weight: bold;
+            transition: all 0.3s ease-in-out;
+          }
+
+          .live-demo-btn {
+            background-color: #28a745;
+            color: white;
+          }
+
+          .live-demo-btn:hover {
+            background-color: #218838;
+          }
+
+          .snapshot-btn {
+            background-color: #ffc107;
+            color: black;
+          }
+
+          .snapshot-btn:hover {
+            background-color: #e0a800;
+          }
+        `}
+      </style>
     </div>
   );
-}
+};
+
+export default Project;

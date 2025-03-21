@@ -1,12 +1,16 @@
-import mongoose from "mongoose"; // Import mongoose
+import mongoose from "mongoose";
 
 const projectSchema = new mongoose.Schema({
-  name: String,
-  logo: String,
+  title: String,
   description: String,
-  technologies: [String],
-  liveDemo: String,
-  screenshots: [String],
+  technologies: String,
+  liveDemoSrc: String,
+  snapshotSrc: String,
+  youtube: String,
+  imgSrc: String,
+  subject: String,
+  type: String,
+  downloadNotesSrc: String,
 });
 
 const Project = mongoose.model("Project", projectSchema);

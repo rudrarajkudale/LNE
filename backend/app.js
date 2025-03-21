@@ -8,7 +8,10 @@ import connectFlash from "connect-flash";
 import connectDB from "./config/db.js";
 import { setupPassport } from "./config/passport.js";
 import authRoutes from "./routes/authRoutes.js";
+
+//project from 
 import projectRoutes from "./routes/projectRoutes.js";
+
 
 dotenv.config();
 
