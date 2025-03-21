@@ -7,6 +7,9 @@ const UserSchema = new mongoose.Schema({
   googleId: String,
   resetPasswordToken: String,
   resetPasswordExpires: Date,
+  otp: String,
+  otpExpires: Date,
+  isVerified: { type: Boolean, default: false },
   reasonToJoin: {
     type: String,
     required: true,

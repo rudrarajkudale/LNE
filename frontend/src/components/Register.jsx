@@ -11,18 +11,79 @@ const Register = () => {
     email: "",
     password: "",
     reasonToJoin: "",
+    otp: "",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [flashMessage, setFlashMessage] = useState("");
   const [flashType, setFlashType] = useState("");
+  const [isOtpSent, setIsOtpSent] = useState(false);
+  const [isOtpVerified, setIsOtpVerified] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const sendOtp = async () => {
+    setFlashMessage("");
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/auth/send-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: formData.email }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setIsOtpSent(true);
+        setFlashMessage("📩 OTP sent to your email. Please check your inbox.");
+        setFlashType("success");
+      } else {
+        setFlashMessage(data.message || "❌ Failed to send OTP.");
+        setFlashType("error");
+      }
+    } catch (error) {
+      setFlashMessage("⚠️ Something went wrong. Please try again.");
+      setFlashType("error");
+    }
+  };
+
+  const verifyOtp = async () => {
+    setFlashMessage("");
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/auth/verify-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: formData.email, otp: formData.otp }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setIsOtpVerified(true);
+        setFlashMessage("✅ OTP verified successfully! You can now register.");
+        setFlashType("success");
+      } else {
+        setFlashMessage(data.message || "❌ Invalid OTP.");
+        setFlashType("error");
+      }
+    } catch (error) {
+      setFlashMessage("⚠️ Something went wrong. Please try again.");
+      setFlashType("error");
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setFlashMessage("");
+
+    if (!isOtpVerified) {
+      setFlashMessage("❗ Please verify your OTP before proceeding.");
+      setFlashType("error");
+      return;
+    }
 
     try {
       const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/auth/register`, {
@@ -51,14 +112,8 @@ const Register = () => {
     }
   };
 
-  const handleGoogleSignIn = () => {
-    localStorage.setItem(
-      "flashMessage",
-      JSON.stringify({ type: "success", message: "🎉 Welcome to Last Night Engineering!" })
-    );
-    setTimeout(() => {
-      window.location.href = `${import.meta.env.VITE_BACKEND_URL}/api/auth/google`;
-    }, 1000);
+  const handleGoogleSignUp = () => {
+    window.location.href = `${import.meta.env.VITE_BACKEND_URL}/api/auth/google`;
   };
 
   return (
@@ -84,6 +139,23 @@ const Register = () => {
                 <label className="form-label">Email</label>
                 <input type="email" className="form-control" name="email" placeholder="Enter email" onChange={handleChange} required />
               </div>
+
+              {!isOtpSent && (
+                <button type="button" className="btn btn-outline-orange w-100 mb-2" onClick={sendOtp}>
+                  📩 Send OTP
+                </button>
+              )}
+
+              {isOtpSent && !isOtpVerified && (
+                <div className="mb-2">
+                  <div className="input-group">
+                    <input type="text" className="form-control" name="otp" placeholder="Enter OTP" onChange={handleChange} required />
+                    <button type="button" className="btn btn-orange" onClick={verifyOtp}>
+                      ✅Verify
+                    </button>
+                  </div>
+                </div>
+              )}
 
               <div className="mb-2 position-relative">
                 <label className="form-label">Create Password</label>
@@ -125,12 +197,20 @@ const Register = () => {
                   <option value="Other">Other</option>
                 </select>
               </div>
-              
-              <button type="submit" className="btn btn-orange w-100 mb-2">🔐 Sign Up</button>
-              <button type="button" className="btn btn-outline-orange w-100 d-flex align-items-center justify-content-center" onClick={handleGoogleSignIn}>
-                <img src="https://img.icons8.com/color/16/000000/google-logo.png" className="me-1" alt="Google" />
-                Sign up with Google
+
+              <button type="submit" className="btn btn-orange w-100 mb-2" disabled={!isOtpVerified}>
+                🔐 Sign Up
               </button>
+
+              <button
+                type="button"
+                className="btn btn-outline-orange w-100 d-flex align-items-center justify-content-center"
+                onClick={handleGoogleSignUp}
+              >
+                <img src="https://img.icons8.com/color/16/000000/google-logo.png" className="me-1" alt="Google" />
+                Sign Up with Google
+              </button>
+
               <p className="mt-2 text-center small">
                 Already have an account?{" "}
                 <a
@@ -140,14 +220,14 @@ const Register = () => {
                     e.preventDefault();
                     localStorage.setItem(
                       "flashMessage",
-                      JSON.stringify({ type: "success", message: "✅ You can Login now!" })
+                      JSON.stringify({ type: "success", message: "✅ You can sign in now!" })
                     );
                     window.location.href = "/login";
                   }}
                 >
                   Login
                 </a>
-              </p>
+              </p>     
             </form>
           </div>
         </div>
