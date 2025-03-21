@@ -66,7 +66,7 @@ const ContactForm = () => {
   };
 
   return (
-    <div className="registerContainer">
+    <div className="registerContainer" style={{marginTop:"170px"}}>
       <div className="container-fluid">
         <div className="row align-items-center justify-content-center">
           <div className="col-md-5 d-none d-md-flex align-items-center justify-content-center">
