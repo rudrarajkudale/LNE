@@ -8,7 +8,7 @@ export default function Projects() {
   const [projects, setProjects] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-  const [flashMessage, setFlashMessage] = useState({ message: "", type: "" }); // Flash message state
+  const [flashMessage, setFlashMessage] = useState({ message: "", type: "" });
 
   const [newProject, setNewProject] = useState({
     name: "",
@@ -53,29 +53,20 @@ export default function Projects() {
           screenshots: "",
         });
 
-        // Show success message
         setFlashMessage({ message: "Project added successfully!", type: "success" });
-
-        // Hide message after 3 seconds
         setTimeout(() => setFlashMessage({ message: "", type: "" }), 3000);
       })
       .catch((err) => {
         console.error("Error adding project:", err);
-
-        // Show error message
         setFlashMessage({ message: "Failed to add project!", type: "error" });
-
-        // Hide message after 3 seconds
         setTimeout(() => setFlashMessage({ message: "", type: "" }), 3000);
       });
   };
 
-  // Open Confirmation Modal
   const handleCancel = () => {
     setShowConfirm(true);
   };
 
-  // Close Form if "Yes" is clicked
   const confirmCancel = () => {
     setShowForm(false);
     setShowConfirm(false);
@@ -83,7 +74,6 @@ export default function Projects() {
 
   return (
     <div className="container position-relative py-4">
-      {/* Flash Message */}
       {flashMessage.message && (
         <div className={`flash-message ${flashMessage.type}`}>
           {flashMessage.message}
@@ -98,9 +88,14 @@ export default function Projects() {
           onChange={(e) => setSearchTerm(e.target.value)}
           className="form-control search-input"
         />
+        <div>
+        <button onClick={() => navigate('/contactus')} className="btn-primary-custom me-2">
+          Grab Your Project
+        </button>
         <button onClick={() => setShowForm(true)} className="btn-primary-custom me-2">
           Create Project
         </button>
+        </div>
       </div>
 
       <div className="row row-cols-1 row-cols-md-3 g-4 mt-4">
@@ -122,7 +117,6 @@ export default function Projects() {
           ))}
       </div>
 
-      {/* Form for adding new projects */}
       {showForm && (
         <div className="project-form-overlay">
           <div className="project-form">
@@ -188,16 +182,11 @@ export default function Projects() {
                 className="form-control mb-3"
               />
 
-              {/* Buttons: Add & Cancel */}
               <div className="d-flex justify-content-between">
                 <button type="submit" className="btn btn-outline-primary">
                   Add Project
                 </button>
-                <button
-                  type="button"
-                  onClick={handleCancel}
-                  className="btn btn-outline-danger"
-                >
+                <button type="button" onClick={handleCancel} className="btn btn-outline-danger">
                   Cancel
                 </button>
               </div>
@@ -206,7 +195,6 @@ export default function Projects() {
         </div>
       )}
 
-      {/* Styled Confirmation Modal */}
       {showConfirm && (
         <div className="confirm-modal">
           <div className="modal-content">
