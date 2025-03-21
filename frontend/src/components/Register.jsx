@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "../styles/Register.css";
+// import "../styles/Register.css";
 import RegisterImg from "../assets/registerImg.png";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import FlashMsg from "../utils/FlashMsg";
@@ -117,7 +117,7 @@ const Register = () => {
   };
 
   return (
-    <div className="registerContainer">
+    <div className="registerContainer" style={{ marginTop: "150px" }}>
       <div className="container-fluid">
         <div className="row align-items-center justify-content-center">
           <div className="col-md-5 d-none d-md-flex align-items-center justify-content-center">
