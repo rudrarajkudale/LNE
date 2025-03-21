@@ -3,6 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "../styles/Login.css";
 import LoginImg from "../assets/loginIn.png";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import axios from "axios";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -12,17 +13,19 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     localStorage.removeItem("flashMessage");
-
     try {
+      const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/login`, {
+        email,
+        password,
+      });
+      localStorage.setItem("token", data.token);
       const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/auth/login`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-
-      const data = await response.json();
-
+      const result = await response.json();
       if (response.ok) {
         localStorage.setItem(
           "flashMessage",
@@ -34,7 +37,7 @@ const Login = () => {
       } else {
         localStorage.setItem(
           "flashMessage",
-          JSON.stringify({ type: "error", message: `❌ ${data.message || "Invalid email or password. Please try again."}` })
+          JSON.stringify({ type: "error", message: `❌ ${result.message || "Invalid email or password. Please try again."}` })
         );
         window.location.reload();
       }
@@ -46,6 +49,7 @@ const Login = () => {
       window.location.reload();
     }
   };
+  
 
   const handleGoogleSignIn = () => {
     localStorage.setItem(

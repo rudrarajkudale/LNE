@@ -1,12 +1,16 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
+import FlashMsg from "../utils/FlashMsg"; // Import the FlashMsg component
 
 const ResetPassword = () => {
   const { token } = useParams();
   const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+
+  // Flash message states
+  const [flashMessage, setFlashMessage] = useState("");
+  const [flashType, setFlashType] = useState("");
 
   const handleResetPassword = async (e) => {
     e.preventDefault();
@@ -19,9 +23,22 @@ const ResetPassword = () => {
       });
 
       const data = await response.json();
-      setMessage(data.message);
+
+      if (response.ok) {
+        setFlashMessage("✅ Password reset successfully! You can now login.");
+        setFlashType("success");
+
+        // Redirect to login after 2 seconds
+        setTimeout(() => {
+          window.location.href = "/login";
+        }, 2000);
+      } else {
+        setFlashMessage(data.message || "❌ Failed to reset password.");
+        setFlashType("error");
+      }
     } catch (error) {
-      setMessage("⚠️ Something went wrong.");
+      setFlashMessage("⚠️ Something went wrong. Please try again.");
+      setFlashType("error");
     }
   };
 
@@ -30,11 +47,11 @@ const ResetPassword = () => {
       className="registerContainer"
       style={{
         marginTop: "170px",
-        border: "2px solid #ff8c00",  // ✅ Border added around the container
-        borderRadius: "12px",         // ✅ Rounded corners
-        padding: "30px",              // ✅ Padding for spacing
-        background: "#fff",           // ✅ Background color set
-        boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)", // ✅ Shadow effect
+        border: "2px solid #ff8c00",
+        borderRadius: "12px",
+        padding: "30px",
+        background: "#fff",
+        boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
       }}
     >
       <div className="container-fluid">
@@ -47,7 +64,8 @@ const ResetPassword = () => {
             />
           </div>
           <div className="col-md-6 mt-4">
-            {message && <p className="alert alert-info text-center">{message}</p>}
+            {/* Display flash message */}
+            {flashMessage && <FlashMsg message={flashMessage} type={flashType} />}
 
             <h3 className="fw-bold text-center mb-3">🔒 Reset Your Password</h3>
             <p className="text-muted text-center mb-3">Enter a new strong password</p>
@@ -77,17 +95,23 @@ const ResetPassword = () => {
                 </div>
               </div>
 
-              <button type="submit" className="btn btn-warning w-100 mt-2">🔐 Reset Password</button>
+              <button type="submit" className="btn btn-warning w-100 mt-2">
+                🔐 Reset Password
+              </button>
               <p className="mt-3 text-center small">
                 Remember your password?{" "}
-                <a href="/login" className="text-warning" onClick={(e) => {
-                  e.preventDefault();
-                  localStorage.setItem(
-                    "flashMessage",
-                    JSON.stringify({ type: "success", message: "✅ You can Login now!" })
-                  );
-                  window.location.href = "/login";
-                }}>
+                <a
+                  href="/login"
+                  className="text-warning"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    localStorage.setItem(
+                      "flashMessage",
+                      JSON.stringify({ type: "success", message: "✅ You can Login now!" })
+                    );
+                    window.location.href = "/login";
+                  }}
+                >
                   Login
                 </a>
               </p>

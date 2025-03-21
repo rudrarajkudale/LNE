@@ -30,9 +30,16 @@ const setupPassport = () => {
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
-          let user = await User.findOne({ googleId: profile.id });
+          let user = await User.findOne({ email: profile.emails[0].value });
 
-          if (!user) {
+          if (user) {
+            // If user exists but has no Google ID, update it
+            if (!user.googleId) {
+              user.googleId = profile.id;
+              await user.save();
+            }
+          } else {
+            // Create a new user if not found
             user = new User({
               fullName: profile.displayName,
               email: profile.emails[0].value,
@@ -41,6 +48,7 @@ const setupPassport = () => {
             });
             await user.save();
           }
+
           return done(null, user);
         } catch (err) {
           return done(err);

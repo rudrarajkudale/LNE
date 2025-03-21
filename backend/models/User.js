@@ -4,12 +4,11 @@ const UserSchema = new mongoose.Schema({
   fullName: String,
   email: { type: String, unique: true },
   password: String,
-  googleId: String,
+  googleId: { type: String, unique: true, sparse: true },
   resetPasswordToken: String,
   resetPasswordExpires: Date,
   otp: String,
   otpExpires: Date,
-  isVerified: { type: Boolean, default: false },
   reasonToJoin: {
     type: String,
     required: true,

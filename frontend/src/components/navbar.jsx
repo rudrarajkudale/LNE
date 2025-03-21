@@ -10,23 +10,23 @@ const Navbar = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [flashMessage, setFlashMessage] = useState(null);
+  const [showDropdown, setShowDropdown] = useState(false);
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const token = localStorage.getItem("token");
-        if (!token) return;
-
         const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/auth/user`, {
-          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,
         });
-
-        setUser(data);
+        setUser(data.user);
       } catch (error) {
-        console.error("Error fetching user:", error);
+        if (error.response?.status === 401) {
+          setUser(null);
+        } else {
+          console.error("Error fetching user:", error);
+        }
       }
     };
-
     fetchUser();
   }, []);
 
@@ -40,10 +40,28 @@ const Navbar = () => {
     }
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    setUser(null);
-    navigate("/");
+  const handleLogout = async () => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/auth/logout`, {
+        method: "GET",
+        credentials: "include",
+      });
+      if (response.ok) {
+        setUser(null);
+        setTimeout(() => {
+          navigate("/");
+          window.location.reload();
+        }, 500);
+      } else {
+        console.error("Logout failed:", await response.json());
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
+
+  const handleChangePassword = () => {
+    navigate("/forgot-password");
   };
 
   return (
@@ -65,9 +83,46 @@ const Navbar = () => {
           </ul>
 
           {user ? (
-            <div className="d-flex align-items-center">
-              <span className="text-white fw-bold me-3">{user.fullName.split(" ")[0]}</span>
-              <button onClick={handleLogout} className="btn btn-outline-danger">Logout</button>
+            <div className="d-flex align-items-center position-relative">
+              <span
+                className="text-black fw-bold me-3 cursor-pointer nav-link"
+                style={{ transition: "color 0.3s" }}
+                onMouseEnter={(e) => (e.target.style.color = "#ff8c00")}
+                onMouseLeave={(e) => (e.target.style.color = "black")}
+                onClick={() => setShowDropdown(!showDropdown)}
+              >
+                {user.fullName.split(" ")[0]}
+              </span>
+              {showDropdown && (
+                <div
+                  className="dropdown-menu show position-absolute mt-2"
+                  style={{
+                    top: "100%",
+                    right: "0",
+                    border: "1px solid #ff8c00",
+                    borderRadius: "8px",
+                    padding: "10px",
+                    backgroundColor: "#fff",
+                  }}
+                  onMouseEnter={() => setShowDropdown(true)}
+                  onMouseLeave={() => setShowDropdown(false)}
+                >
+                  <button
+                    className="dropdown-item"
+                    style={{ color: "blue" }}
+                    onClick={handleChangePassword}
+                  >
+                    Change Password
+                  </button>
+                  <button
+                    className="dropdown-item"
+                    style={{ color: "red" }}
+                    onClick={handleLogout}
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
             </div>
           ) : (
             <button onClick={() => navigate("/login")} className="btn btn-outline-warning">Login</button>
