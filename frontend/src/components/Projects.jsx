@@ -9,6 +9,12 @@ const Project = () => {
     setProjects(savedProjects);
   }, []);
 
+  const handleDelete = (index) => {
+    const updatedProjects = projects.filter((_, i) => i !== index);
+    setProjects(updatedProjects);
+    localStorage.setItem("projects", JSON.stringify(updatedProjects));
+  };
+
   return (
     <div className="container mt-4">
       <SearchBarWithButtons />
@@ -37,6 +43,7 @@ const Project = () => {
                       <a href={project.liveDemoSrc} target="_blank" rel="noopener noreferrer" className="btn live-demo-btn">🚀 Live Demo</a>
                     )}
                     <button className="btn snapshot-btn">📸 Snapshot</button>
+                    <button className="btn btn-danger" onClick={() => handleDelete(index)}>🗑️ Delete</button>
                   </div>
                 </div>
               </div>
