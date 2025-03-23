@@ -13,6 +13,7 @@ import ForgotPassword from "./components/Forgetpassword";
 import ResetPassword from "./components/ResetPassword";
 import Contactus from "./components/Contactus";
 import CreatePost from "./components/CreatePost";
+import AboutUs from './components/Aboutus'
 
 function App() {
   return (
@@ -30,6 +31,8 @@ function App() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
           <Route path="/createpost" element={<CreatePost/>} />
+          <Route path="/aboutus" element={<AboutUs/>} />
+
 
 
         </Routes>

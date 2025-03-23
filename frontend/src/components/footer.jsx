@@ -20,7 +20,7 @@ const Footer = () => {
         <div className="footer-section">
           <h2>COMPANY</h2>
           <ul>
-            <li><a href="#">About Us</a></li>
+            <li><a href="/aboutus">About Us</a></li>
             <li><a href="#">Support</a></li>
             <li><a href="#">Privacy Policy</a></li>
             <li><a href="#">Terms and Conditions</a></li>
