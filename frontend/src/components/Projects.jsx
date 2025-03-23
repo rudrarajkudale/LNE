@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import SearchBar from './SearchBar';
+import SearchBar from "./SearchBar";
 import "../styles/Projects.css"; // Import the CSS file
 
 const Project = () => {
@@ -24,7 +24,7 @@ const Project = () => {
   const handleDelete = async (id) => {
     try {
       await fetch(`/api/projects/${id}`, { method: "DELETE" }); // Replace with your API endpoint
-      fetchProjects(); // Refresh the list after deletion
+      setProjects((prevProjects) => prevProjects.filter((project) => project._id !== id));
     } catch (error) {
       console.error("Error deleting project:", error);
     }
@@ -51,7 +51,7 @@ const Project = () => {
 
                   {/* Tech Used Section */}
                   <div className="tech-used">
-                    {project.technologies.split(',').map((tech, idx) => (
+                    {project.technologies.split(",").map((tech, idx) => (
                       <span key={idx} className="tech-chip">{tech.trim()}</span>
                     ))}
                   </div>
