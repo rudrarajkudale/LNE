@@ -1,9 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/SearchBar.css";
 
-const SearchBar = () => {
+const SearchBar = ({ onSearch }) => {
   const navigate = useNavigate(); // Hook for navigation
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSearch = (e) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+    onSearch(query); // Pass the search query to the parent component
+  };
 
   return (
     <div className="search-bar-container">
@@ -12,6 +19,8 @@ const SearchBar = () => {
         type="text"
         className="search-input"
         placeholder="Search..."
+        value={searchQuery}
+        onChange={handleSearch}
       />
 
       {/* Buttons */}
