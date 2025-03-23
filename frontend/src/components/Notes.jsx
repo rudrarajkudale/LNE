@@ -4,13 +4,17 @@ import SearchBar from './SearchBar';
 
 const Notes = () => {
   const [notes, setNotes] = useState([]);
+  const [filteredNotes, setFilteredNotes] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
 
+  // Fetch notes from the database
   useEffect(() => {
     const fetchNotes = async () => {
       try {
         const response = await fetch("/api/data/notes");
         const data = await response.json();
         setNotes(data);
+        setFilteredNotes(data); // Initialize filtered notes with all notes
       } catch (error) {
         console.error("Error fetching notes:", error);
       }
@@ -19,13 +23,69 @@ const Notes = () => {
     fetchNotes();
   }, []);
 
+  // Handle search
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    const filtered = notes.filter((note) => {
+      return (
+        note.title.toLowerCase().includes(query.toLowerCase()) ||
+        note.description.toLowerCase().includes(query.toLowerCase())
+      );
+    });
+    setFilteredNotes(filtered);
+  };
+
+  // Generate suggestions based on the search query
+  const generateSuggestions = () => {
+    if (searchQuery.length === 0) return [];
+    const query = searchQuery.toLowerCase();
+
+    const suggestions = notes
+      .flatMap((note) => {
+        const matches = [];
+
+        // Check title
+        if (note.title.toLowerCase().includes(query)) {
+          matches.push(`${note.title}`);
+        }
+
+        // Check description
+        const descriptionWords = note.description.toLowerCase().split(" ");
+        const matchedDescriptionWord = descriptionWords.find((word) =>
+          word.includes(query)
+        );
+        if (matchedDescriptionWord) {
+          matches.push(`${matchedDescriptionWord}`);
+        }
+
+        return matches;
+      })
+      .slice(0, 5); // Limit to 5 suggestions
+
+    return suggestions;
+  };
+
+  const suggestions = generateSuggestions();
+
   return (
     <div className="container mt-4">
-      <SearchBar />
+      <SearchBar onSearch={handleSearch} />
+
+      {/* Display search suggestions */}
+      {suggestions.length > 0 && (
+        <div className="suggestions-container">
+          {suggestions.map((suggestion, index) => (
+            <div key={index} className="suggestion-item">
+              {suggestion}
+            </div>
+          ))}
+        </div>
+      )}
+
       <h2 className="text-center mb-4">Notes</h2>
       <div className="row">
-        {notes.length > 0 ? (
-          notes.map((note, index) => (
+        {filteredNotes.length > 0 ? (
+          filteredNotes.map((note, index) => (
             <div key={index} className="col-md-4 mb-4">
               <div className="card project-card">
                 <img
