@@ -117,7 +117,6 @@ router.get(
   passport.authenticate("google", { failureRedirect: "/" }),
   async (req, res) => {
     try {
-      console.log("User object from Google callback:", req.user);
 
       // Find the user by email
       let user = await User.findOne({ email: req.user.email });
