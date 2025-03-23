@@ -8,10 +8,8 @@ import connectFlash from "connect-flash";
 import connectDB from "./config/db.js";
 import { setupPassport } from "./config/passport.js";
 import authRoutes from "./routes/authRoutes.js";
-
-//project from 
-import projectRoutes from "./routes/projectRoutes.js";
-
+import dataRoutes from "./routes/dataRoutes.js";
+import LNERoutes from "./routes/LNERoutes.js"; 
 
 dotenv.config();
 
@@ -56,6 +54,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use("/api/auth", authRoutes);
+app.use("/api/data", dataRoutes);
+app.use("/api/LNE", LNERoutes);
 
 app.get("/", (req, res) => res.send("Welcome to the API 🚀"));
 
@@ -67,8 +67,6 @@ app.use((err, req, res, next) => {
   const { statusCode = 500, message = "Something went wrong" } = err;
   res.status(statusCode).json({ error: message });
 });
-app.use("/api/projects", projectRoutes);
-
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
