@@ -1,7 +1,7 @@
 import React, { useRef, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/Home.css";
-import Footer from "./Footer";
+import Footer from "./footer";
 import { 
   FaSearch, FaBullhorn, FaUsers, FaEllipsisH, 
   FaWhatsapp, FaPhone, FaBuilding, FaEnvelope ,
@@ -11,6 +11,7 @@ import heroImg from "../assets/BrainStorming.gif";
 import missionImg from "../assets/mission.png";
 import { Container, Row, Col, Card } from "react-bootstrap";
 import { motion } from "framer-motion";
+import FloatingIcons from "./FloatingIcons";
 
 const whatsappNumber = "YOUR_WHATSAPP_NUMBER";
 const phoneNumber = "+YOUR_PHONE_NUMBER";
@@ -117,16 +118,7 @@ const Home = () => {
           </motion.button>
         </Container>
       </section>
-
-      {/* Floating Contact Icons */}
-      <div className="floating-icons">
-        <a href={`https://wa.me/${whatsappNumber}`} className="whatsapp-icon" target="_blank" rel="noopener noreferrer">
-          <FaWhatsapp size={40} color="#25D366" />
-        </a>
-        <a href={`tel:${phoneNumber}`} className="phone-icon">
-          <FaPhone size={40} color="#007BFF" />
-        </a>
-      </div>
+      <FloatingIcons/>
 
       {/* Mission Section */}
       <Container className="mission-section my-5">
