@@ -1,13 +1,171 @@
-.about-us {
-  padding: 40px 0;
+.business-banner {
+  border-radius: 15px;
+  padding: 50px;
+  margin-top: 5%;
 }
 
-.about-us h2 {
-  font-size: 2rem;
+.text-section .title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #333;
 }
 
-.about-us img {
-  width: 100%;
+.text-section .description {
+  font-size: 1.2rem;
+  color: #666;
+  margin-bottom: 20px;
+  padding: 12px 10px;
+  font-family:'Times New Roman', Times, serif
+}
+
+.cta-button {
+  font-size: 0.9rem;
+  padding: 15px 10px;
+}
+
+.image-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.right-image {
+  max-width: 100%;
   height: auto;
+  display: block;
+}
+body {
+  background-color: #fdf7e8;
+}
+
+.service-card {
   border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-in-out;
+}
+
+.service-card:hover {
+  transform: translateY(-5px);
+}
+
+.web-design {
+  background-color: #c6ede6;
+}
+
+.development {
+  background-color: #fbd9c3;
+}
+
+.ecommerce {
+  background-color: #ffe28a;
+}
+
+.icon {
+  margin-bottom: 15px;
+  color: #333;
+}
+.about-us-section {
+  background-color: #ffdb7d;
+  padding: 50px 0;
+  border-radius: 10px;
+}
+
+.about-img {
+  max-width: 70%;
+  border-radius: 10px;
+  padding: 10px 15px;
+}
+
+.about-details {
+  margin-top: 20px;
+}
+
+.about-details h3 {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.about-details span {
+  color: #555;
+  font-size: 18px;
+}
+.projects-section {
+  background-color: #f8f5f0;
+  padding: 60px 20px;
+  border-radius: 15px;
+}
+
+.section-title {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.section-text {
+  font-size: 1.1rem;
+  color: #555;
+}
+
+.project-btn {
+  background-color: #222; /* Dark button */
+  color: #fff;
+  width: 100px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  padding: 12px 24px;
+  border-radius: 30px;
+  border: 2px solid transparent;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.project-btn:hover {
+  background-color: #ff9900; /* Highlight color on hover */
+  border-color: #ff9900;
+  color: white;
+  transform: scale(1.05);
+  box-shadow: 0px 10px 25px rgba(255, 153, 0, 0.3);
+}
+
+.project-btn:active {
+  transform: scale(0.98);
+  box-shadow: 0px 5px 15px rgba(255, 153, 0, 0.5);
+}
+
+
+.project-card {
+  border-radius: 15px;
+  overflow: hidden;
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.project-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.project-img {
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+  cursor: pointer;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.project-img:hover {
+  opacity: 0.85;
+}
+
+.project-badge {
+  display: inline-block;
+  background: #ff9900;
+  color: white;
+  font-size: 0.9rem;
+  padding: 6px 12px;
+  border-radius: 5px;
+}
+.icon {
+  color: rgb(31, 30, 30); /* Blue color */
+  margin-right: 10px;
 }
