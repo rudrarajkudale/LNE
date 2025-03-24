@@ -7,7 +7,7 @@ import {
   FaWhatsapp, FaPhone, FaBuilding, FaEnvelope ,
   FaClock, FaUser, FaLightbulb, FaTrophy 
 } from "react-icons/fa";
-import heroImg from "../assets/BrainStorming.gif";
+import heroImg from "../assets/homeImg.gif";
 import missionImg from "../assets/mission.png";
 import { Container, Row, Col, Card } from "react-bootstrap";
 import { motion } from "framer-motion";
