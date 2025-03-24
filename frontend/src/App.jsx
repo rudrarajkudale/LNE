@@ -14,6 +14,7 @@ import ResetPassword from "./components/ResetPassword";
 import Contactus from "./components/Contactus";
 import CreatePost from "./components/CreatePost";
 import AboutUs from './components/Aboutus'
+import Chatbot from "./components/Chatbot";
 
 function App() {
   return (
@@ -32,9 +33,7 @@ function App() {
           <Route path="/reset-password/:token" element={<ResetPassword />} />
           <Route path="/createpost" element={<CreatePost/>} />
           <Route path="/aboutus" element={<AboutUs/>} />
-
-
-
+          <Route path="/chatbot" element={<Chatbot/>} />
         </Routes>
       </div>
     </Router>

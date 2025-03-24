@@ -2,8 +2,16 @@ import express from "express";
 import Project from "../models/Project.js";
 import Teaching from "../models/Teaching.js";
 import Note from "../models/Notes.js";
-
+import supportQuestions from "../config/support.js";
 const router = express.Router();
+
+router.get("/support", (req, res) => {
+  try {
+    res.status(200).json({ success: true, data: supportQuestions });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Failed to fetch support data" });
+  }
+});
 
 // Create a post (projects, teaching, or notes)
 router.post("/:category", async (req, res) => {
