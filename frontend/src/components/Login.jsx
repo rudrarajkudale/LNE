@@ -101,7 +101,7 @@ const Login = () => {
                   />
                   <button
                     type="button"
-                    className="btn btn-outline-secondary"
+                    className="btn btn-outline-secondary eyes"
                     onClick={() => setShowPassword(!showPassword)}
                     style={{ borderColor: "#ff8c00", color: "#ff8c00", backgroundColor: "transparent" }}
                     onMouseEnter={(e) => (e.target.style.backgroundColor = "lightyellow")}

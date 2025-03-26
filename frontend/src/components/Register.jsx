@@ -209,7 +209,7 @@ const Register = () => {
                   />
                   <button 
                     type="button" 
-                    className="btn btn-outline-secondary" 
+                    className="btn btn-outline-secondary eyes" 
                     onClick={() => setShowPassword(!showPassword)}
                     style={{ borderColor: "#ff8c00", color: "#ff8c00", backgroundColor: "transparent" }}
                     onMouseEnter={(e) => e.target.style.backgroundColor = "lightyellow"}
@@ -237,7 +237,7 @@ const Register = () => {
                 </select>
               </div>
 
-              <button type="submit" className="btn btn-orange w-100 mb-2" disabled={!isOtpVerified}>
+              <button type="submit" className=" signupBtn" disabled={!isOtpVerified}>
                 🔐 Sign Up
               </button>
 
