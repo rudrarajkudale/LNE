@@ -53,7 +53,11 @@ const ContactForm = () => {
   };
 
   const handleProjectDetailsChange = (e) => {
-    setProjectDetails({ ...projectDetails, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setProjectDetails((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const handleDesignPreferenceChange = (e) => {
@@ -72,29 +76,30 @@ const ContactForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     let formData = {};
-  
+
     if (category === "projects") {
       formData = {
         category,
-        subCategory,
-        projectDetails: {
+        projects: {
+          subCategory,
           requirements: projectDetails.requirements,
           budget: projectDetails.budget,
           timeline: projectDetails.timeline,
           audience: projectDetails.audience,
           designPreferences: projectDetails.designPreferences,
           technicalSpecs: projectDetails.technicalSpecs,
+          competitorReferences: projectDetails.competitorReferences,
           keyContacts: projectDetails.keyContacts,
         },
       };
     } else if (category === "notes") {
       formData = {
         category,
-        selectedNoteType,
-        subject: selectedNoteType === "Other" ? subject : "",
-        projectDetails: {
+        notes: {
+          selectedNoteType,
+          subject: selectedNoteType === "Other" ? subject : "",
           requirements: projectDetails.requirements,
           keyContacts: projectDetails.keyContacts,
         },
@@ -102,24 +107,24 @@ const ContactForm = () => {
     } else if (category === "teaching") {
       formData = {
         category,
-        userType,
-        learningTopic,
-        message,
-        contact,
+        teaching: {
+          userType,
+          learningTopic,
+          message,
+          contact,
+        },
       };
     } else if (category === "other") {
       formData = {
         category,
-        projectDetails: {
+        other: {
           requirements: projectDetails.requirements,
           keyContacts: projectDetails.keyContacts,
         },
       };
     }
-  
+
     try {
-      // Send the form data to the backend
-      console.log("Sending form data...");
       const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/LNE/contacts`, {
         method: "POST",
         headers: {
@@ -128,7 +133,7 @@ const ContactForm = () => {
         credentials: "include",
         body: JSON.stringify(formData),
       });
-  
+
       if (response.ok) {
         alert("Form submitted successfully!");
       } else {
@@ -140,6 +145,7 @@ const ContactForm = () => {
       alert("An error occurred while submitting the form.");
     }
   };
+
   return (
     <div className="registerContainer" style={{ marginTop: "170px" }}>
       <div className="container-fluid">
@@ -183,12 +189,12 @@ const ContactForm = () => {
 
                   <div className="mb-2">
                     <label className="form-label">Budget</label>
-                    <input type="text" className="form-control" name="budget" value={projectDetails.budget} onChange={handleProjectDetailsChange} required />
+                    <input type="number" className="form-control" name="budget" value={projectDetails.budget} onChange={handleProjectDetailsChange} required />
                   </div>
 
                   <div className="mb-2">
                     <label className="form-label">Design Preference</label>
-                    <select className="form-control" name="designPreferences" value={projectDetails.designPreferences} onChange={handleDesignPreferenceChange} required>
+                    <select className="form-control" name="designPreferences" value={projectDetails.designPreferences} onChange={handleDesignPreferenceChange} required multiple>
                       <option value="">-- Select an Option --</option>
                       {designPreferencesOptions.map((option) => (
                         <option key={option} value={option}>{option}</option>
@@ -219,6 +225,11 @@ const ContactForm = () => {
                   <div className="mb-2">
                     <label className="form-label">Technical Specifications</label>
                     <input type="text" className="form-control" name="technicalSpecs" value={projectDetails.technicalSpecs} onChange={handleProjectDetailsChange} required />
+                  </div>
+
+                  <div className="mb-2">
+                    <label className="form-label">Competitor References</label>
+                    <input type="text" className="form-control" name="competitorReferences" value={projectDetails.competitorReferences} onChange={handleProjectDetailsChange} required />
                   </div>
 
                   <div className="mb-2">

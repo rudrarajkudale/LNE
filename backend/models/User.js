@@ -1,10 +1,32 @@
 import mongoose from "mongoose";
 
 const UserSchema = new mongoose.Schema({
-  fullName: String,
-  email: { type: String, unique: true },
-  password: String,
-  googleId: { type: String, unique: true, sparse: true },
+  fullName: {
+    type: String,
+    required: true,
+  },
+  email: {
+    type: String,
+    unique: true,
+    sparse: true,
+    required: function () {
+      return !this.googleId;
+    },
+  },
+  password: {
+    type: String,
+    required: function () {
+      return !this.googleId;
+    },
+  },
+  googleId: {
+    type: String,
+    unique: true,
+    sparse: true,
+    required: function () {
+      return !this.email;
+    },
+  },
   resetPasswordToken: String,
   resetPasswordExpires: Date,
   otp: String,
