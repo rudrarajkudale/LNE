@@ -1,10 +1,11 @@
 .registerContainer {
   width: 80%;
-  padding: 20px;
-  margin: auto;
-  margin-top: 8%;
+  padding: 10px;
   margin-left: 8%;
-  background: white;
+  /* background: white; */
+}
+::-webkit-scrollbar {
+  display: none;
 }
 
 .text-orange {
@@ -17,12 +18,15 @@
   color: #ff8c00 !important;
   text-decoration: underline;
 }
+.btn-outline-orange {
+  color: orange;
+  border: 2px solid orange;
+  background-color: transparent;
+}
 
-.btn-orange, .btn-outline-orange {
-  font-weight: bold;
-  padding: 10px;
-  border-radius: 8px;
-  font-size: 14px;
+.btn-outline-orange:hover {
+  background-color: orange;
+  color: white;
 }
 
 .btn-orange {
@@ -42,15 +46,49 @@
   background: transparent;
 }
 
+/* Dropdown select box styling */
 .form-control {
-  border: 1px solid orange;
+  border: 2px solid orange;
+  background-color: #fff;
+  color: black;
+  font-size: 16px;
   padding: 8px;
-  font-size: 14px;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
-.form-control:focus {
-  box-shadow: 0 0 5px rgba(255, 165, 0, 0.6);
+/* Dropdown select box styling */
+.form-control {
+  border: 2px solid orange;
+  background-color: #fff;
+  color: black;
+  font-size: 16px;
+  padding: 8px;
+  border-radius: 5px;
+  cursor: pointer;
 }
+
+/* Default Option Styling */
+.form-control option {
+  background-color: white;
+  color: black;
+  font-size: 14px;
+  padding: 10px;
+}
+
+/* Remove the default blue selection highlight */
+.form-control:focus {
+  outline: none;
+  border-color: #ff8c00; /* Orange border on focus */
+}
+
+/* Custom selected option background (May not work in all browsers) */
+.form-control option:checked {
+  background-color: #ff8c00 !important;
+  color: white !important;
+}
+
+
 
 .img-fluid {
   max-width: 100%;
@@ -66,4 +104,23 @@
       max-width: 600px;
   }
   .d-none.d-lg-flex { display: none !important; }
+}
+.signupBtn{
+  width: 100%;
+  margin-bottom: 2%;
+  color: orange;
+    border: 2px solid orange;
+    border-radius: 10px;
+    background-color: transparent;
+    padding: 10px 10px;
+    font-weight: 600;
+}
+.signupBtn:hover{
+  background-color: #ff8c00;
+  color: #000;
+}
+.eyes{
+  border: 1px solid orange;
+  border-radius: 10px;
+
 }

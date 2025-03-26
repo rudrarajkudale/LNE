@@ -71,3 +71,8 @@
     }
     .d-none.d-lg-flex { display: none !important; }
   }
+  .eyes{
+    border: 1px solid orange;
+    border-radius: 10px;
+  
+  }
