@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "../styles/Register.css";
+import "../styles/Login.css";
 import FlashMsg from "../utils/FlashMsg";
-import forgotpassImg from '../assets/forgotpassImg.png'
+import forgotpassImg from '../assets/forgotpassImg.png';
+import { FaLink } from "react-icons/fa";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -36,40 +37,57 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="registerContainer d-flex align-items-center justify-content-center vh-100">
-      <div className="card p-4 w-50 text-center">
-        {/* 🔹 Forgot Password Image */}
-        <img 
-          src={forgotpassImg} 
-          alt="Forgot Password" 
-          className=" mx-auto d-block mb-3" 
-          style={{ maxWidth: "200px" }} 
-        />
-
-        {flashMessage && <FlashMsg message={flashMessage} type={flashType} />}
-        <h3 className="fw-bold text-center mb-2">🔑 Forgot Password?</h3>
-        <p className="text-muted text-center mb-3">Enter your email to reset your password.</p>
-        
-        <form onSubmit={handleForgotPassword}>
-          <div className="mb-3">
-            <label className="form-label"></label>
-            <input 
-              type="email" 
-              className="form-control" 
-              placeholder="Enter your email" 
-              value={email} 
-              onChange={(e) => setEmail(e.target.value)} 
-              required 
-            />
+    <div className="loginContainer forgetcontainer">
+      <div className="container-fluid ">
+        <div className="row align-items-center justify-content-center">
+          <div className="col-md-5 d-none d-md-flex align-items-center justify-content-center">
+            <img src={forgotpassImg} alt="Illustration" style={{ maxWidth: "75%" }} />
           </div>
-          <button type="submit" className="btn btn-orange w-100" disabled={loading}>
-            {loading ? "Sending..." : "Send Reset Link"}
-          </button>
-        </form>
-        
-        <p className="mt-2 text-center small">
-          Remembered your password? <a href="/login" className="text-orange">Login</a>
-        </p>
+
+          <div className="col-md-6">
+            {flashMessage && <FlashMsg message={flashMessage} type={flashType} />}
+
+            <h3 className="fw-bold text-center mb-2">🔑 Forgot Password?</h3>
+            <p className="text-muted text-center mb-2">Enter your email to reset your password.</p>
+
+            <form onSubmit={handleForgotPassword}>
+              <div className="mb-2">
+                <label className="form-label">Email</label>
+                <input
+                  type="email"
+                  className="form-control"
+                  style={{ borderColor: "#ff8c00" }}
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+
+              <button type="submit" className="btn btn-orange w-100 mb-2" disabled={loading}>
+                <FaLink /> {loading ? "Sending..." : "Send Reset Link"}
+              </button>
+
+              <p className="mt-2 text-center small">
+                Remembered your password?{" "}
+                <a
+                  href="/login"
+                  className="text-orange"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    localStorage.setItem(
+                      "flashMessage",
+                      JSON.stringify({ type: "success", message: "✅ You can sign in now!" })
+                    );
+                    window.location.href = "/login";
+                  }}
+                >
+                  Login
+                </a>
+              </p>
+            </form>
+          </div>
+        </div>
       </div>
     </div>
   );

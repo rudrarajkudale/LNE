@@ -3,6 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import RegisterImg from "../assets/registerImg.png";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import FlashMsg from "../utils/FlashMsg";
+import "../styles/Login.css";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -19,7 +20,7 @@ const Register = () => {
   const [isOtpSent, setIsOtpSent] = useState(false);
   const [isOtpVerified, setIsOtpVerified] = useState(false);
   const [isOtpButtonDisabled, setIsOtpButtonDisabled] = useState(false);
-  const [isResendOtpButtonDisabled, setIsResendOtpButtonDisabled] = useState(false); // New state for Resend OTP button
+  const [isResendOtpButtonDisabled, setIsResendOtpButtonDisabled] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -67,7 +68,7 @@ const Register = () => {
       const data = await response.json();
 
       if (response.ok) {
-        setIsResendOtpButtonDisabled(true); // Disable the Resend OTP button after clicking
+        setIsResendOtpButtonDisabled(true);
         setFlashMessage("📩 OTP resent to your email. Please check your inbox.");
         setFlashType("success");
       } else {
@@ -148,12 +149,13 @@ const Register = () => {
   };
 
   return (
-    <div className="registerContainer" style={{ marginTop: "150px" }}>
+    <div className="loginContainer signupcontainer" style={{ marginTop: "170px" }}>
       <div className="container-fluid">
         <div className="row align-items-center justify-content-center">
           <div className="col-md-5 d-none d-md-flex align-items-center justify-content-center">
             <img src={RegisterImg} alt="Illustration" style={{ maxWidth: "75%" }} />
           </div>
+
           <div className="col-md-6">
             {flashMessage && <FlashMsg message={flashMessage} type={flashType} />}
 
@@ -163,16 +165,37 @@ const Register = () => {
             <form onSubmit={handleSubmit}>
               <div className="mb-2">
                 <label className="form-label">Full Name</label>
-                <input type="text" className="form-control" name="fullName" placeholder="Enter full name" onChange={handleChange} required />
+                <input
+                  type="text"
+                  className="form-control"
+                  style={{ borderColor: "#ff8c00" }}
+                  name="fullName"
+                  placeholder="Enter full name"
+                  onChange={handleChange}
+                  required
+                />
               </div>
 
               <div className="mb-2">
                 <label className="form-label">Email</label>
-                <input type="email" className="form-control" name="email" placeholder="Enter email" onChange={handleChange} required />
+                <input
+                  type="email"
+                  className="form-control"
+                  style={{ borderColor: "#ff8c00" }}
+                  name="email"
+                  placeholder="Enter email"
+                  onChange={handleChange}
+                  required
+                />
               </div>
 
               {!isOtpSent && (
-                <button type="button" className="btn btn-outline-orange w-100 mb-2" onClick={sendOtp} disabled={isOtpButtonDisabled}>
+                <button
+                  type="button"
+                  className="btn btn-outline-orange w-100 mb-2"
+                  onClick={sendOtp}
+                  disabled={isOtpButtonDisabled}
+                >
                   📩 Send OTP
                 </button>
               )}
@@ -180,15 +203,28 @@ const Register = () => {
               {isOtpSent && !isOtpVerified && (
                 <div className="mb-2">
                   <div className="input-group">
-                    <input type="text" className="form-control" name="otp" placeholder="Enter OTP" onChange={handleChange} required />
-                    <button type="button" className="btn btn-orange" onClick={verifyOtp}>
+                    <input
+                      type="text"
+                      className="form-control"
+                      style={{ borderColor: "#ff8c00" }}
+                      name="otp"
+                      placeholder="Enter OTP"
+                      onChange={handleChange}
+                      required
+                    />
+                    <button
+                      type="button"
+                      className="btn btn-orange"
+                      onClick={verifyOtp}
+                      style={{ borderColor: "#ff8c00" }}
+                    >
                       ✅Verify
                     </button>
                   </div>
-                  <button 
-                    type="button" 
-                    className="btn btn-outline-orange w-100 mt-2" 
-                    onClick={resendOtp} 
+                  <button
+                    type="button"
+                    className="btn btn-outline-orange w-100 mt-2"
+                    onClick={resendOtp}
                     disabled={isResendOtpButtonDisabled}
                   >
                     🔄 Resend OTP
@@ -199,21 +235,22 @@ const Register = () => {
               <div className="mb-2 position-relative">
                 <label className="form-label">Create Password</label>
                 <div className="input-group">
-                  <input 
-                    type={showPassword ? "text" : "password"} 
+                  <input
+                    type={showPassword ? "text" : "password"}
                     className="form-control"
-                    name="password" 
-                    placeholder="Enter password" 
-                    onChange={handleChange} 
-                    required 
+                    style={{ borderColor: "#ff8c00" }}
+                    name="password"
+                    placeholder="Enter password"
+                    onChange={handleChange}
+                    required
                   />
-                  <button 
-                    type="button" 
-                    className="btn btn-outline-secondary eyes" 
+                  <button
+                    type="button"
+                    className="btn btn-outline-secondary eyes"
                     onClick={() => setShowPassword(!showPassword)}
                     style={{ borderColor: "#ff8c00", color: "#ff8c00", backgroundColor: "transparent" }}
-                    onMouseEnter={(e) => e.target.style.backgroundColor = "lightyellow"}
-                    onMouseLeave={(e) => e.target.style.backgroundColor = "transparent"}
+                    onMouseEnter={(e) => (e.target.style.backgroundColor = "lightyellow")}
+                    onMouseLeave={(e) => (e.target.style.backgroundColor = "transparent")}
                   >
                     {showPassword ? <FaEyeSlash color="#ff8c00" /> : <FaEye color="#ff8c00" />}
                   </button>
@@ -222,11 +259,12 @@ const Register = () => {
 
               <div className="mb-2">
                 <label className="form-label">Why do you want to join?</label>
-                <select 
-                  className="form-control" 
-                  name="reasonToJoin" 
-                  value={formData.reasonToJoin || ""} 
-                  onChange={handleChange} 
+                <select
+                  className="form-control"
+                  style={{ borderColor: "#ff8c00" }}
+                  name="reasonToJoin"
+                  value={formData.reasonToJoin || ""}
+                  onChange={handleChange}
                   required
                 >
                   <option value="" disabled>-- Select an Option --</option>
@@ -237,32 +275,36 @@ const Register = () => {
                 </select>
               </div>
 
-              <button type="submit" className=" signupBtn" disabled={!isOtpVerified}>
+              <button type="submit" className="btn btn-orange w-100 mb-2" disabled={!isOtpVerified}>
                 🔐 Sign Up
               </button>
 
-              <button type="button" className="btn btn-outline-orange w-100 d-flex align-items-center justify-content-center" onClick={handleGoogleSignUp}>
+              <button
+                type="button"
+                className="btn btn-outline-orange w-100 d-flex align-items-center justify-content-center"
+                onClick={handleGoogleSignUp}
+              >
                 <img src="https://img.icons8.com/color/16/000000/google-logo.png" className="me-1" alt="Google" />
                 Sign Up with Google
               </button>
 
               <p className="mt-2 text-center small">
-              Already have an account?{" "}
-              <a
-                href="/login"
-                className="text-orange"
-                onClick={(e) => {
-                  e.preventDefault();
-                  localStorage.setItem(
-                    "flashMessage",
-                    JSON.stringify({ type: "success", message: "✅ You can sign in now!" })
-                  );
-                  window.location.href = "/login";
-                }}
-              >
-                Login
-              </a>
-            </p>   
+                Already have an account?{" "}
+                <a
+                  href="/login"
+                  className="text-orange"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    localStorage.setItem(
+                      "flashMessage",
+                      JSON.stringify({ type: "success", message: "✅ You can sign in now!" })
+                    );
+                    window.location.href = "/login";
+                  }}
+                >
+                  Login
+                </a>
+              </p>
             </form>
           </div>
         </div>

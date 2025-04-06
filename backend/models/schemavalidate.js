@@ -68,12 +68,16 @@ export const contactValidationSchema = Joi.object({
         "any.required": "Note type is required.",
         "any.only": "Invalid note type selected.",
       }),
-    subject: Joi.string().when("selectedNoteType", {
-      is: "Other",
-      then: Joi.required().messages({
-        "any.required": "Subject is required when 'Other' is selected.",
+    subject: Joi.string()
+      .allow('') // Allow empty string
+      .when('selectedNoteType', {
+        is: 'Other',
+        then: Joi.string().required().messages({
+          'any.required': "Subject is required when 'Other' is selected.",
+          'string.empty': "Subject cannot be empty when 'Other' is selected."
+        }),
+        otherwise: Joi.string().allow('').optional() // Explicitly allow empty when not "Other"
       }),
-    }),
     requirements: Joi.string().required().messages({
       "any.required": "Requirements are required.",
     }),
@@ -138,6 +142,8 @@ export const noteValidationSchema = Joi.object({
   downloadNotesSrc: Joi.string().uri().required().messages({
     "any.required": "Download notes source URL is required.",
   }),
+  _id: Joi.string().optional(),
+  __v: Joi.optional()
 });
 
 // Project Schema Validation
@@ -160,6 +166,8 @@ export const projectValidationSchema = Joi.object({
   imgSrc: Joi.string().uri().required().messages({
     "any.required": "Image source URL is required.",
   }),
+  _id: Joi.string().optional(),
+  __v: Joi.optional()
 });
 
 // Teaching Schema Validation
@@ -177,6 +185,8 @@ export const teachingValidationSchema = Joi.object({
       "any.required": "YouTube link is required.",
       "string.pattern.base": "YouTube link must be a valid URL.",
     }),
+  _id: Joi.string().optional(),
+  __v: Joi.optional()
 });
 
 export const userValidationSchema = Joi.object({
@@ -205,5 +215,5 @@ export const userValidationSchema = Joi.object({
     .messages({
       "any.required": "Reason to join is required.",
     }),
-
+   otp: Joi.string().optional()
 });

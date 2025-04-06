@@ -1,40 +1,13 @@
 import { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "../styles/Contactus.css";
+import "../styles/Login.css";
 import ContactImg from "../assets/contact.png";
 
 const ContactForm = () => {
   const [category, setCategory] = useState("");
-  const [subCategory, setSubCategory] = useState("");
-  const [userType, setUserType] = useState("");
-  const [learningTopic, setLearningTopic] = useState("");
-  const [message, setMessage] = useState("");
-  const [contact, setContact] = useState("");
-  const [selectedNoteType, setSelectedNoteType] = useState("");
-  const [subject, setSubject] = useState("");
-  const [projectDetails, setProjectDetails] = useState({
-    requirements: "",
-    budget: "",
-    timeline: "",
-    audience: "",
-    designPreferences: [],
-    technicalSpecs: "",
-    competitorReferences: "",
-    keyContacts: "",
-  });
-
-  const projectOptions = ["E-commerce Website", "MERN Application", "Custom Software", "UI/UX Design", "Other"];
-  const teachingOptions = ["MERN Development", "Full Stack Development", "Programming Language", "DSA", "Other"];
-  const userTypes = ["Freelancer", "Startup", "Small Business", "Enterprise", "Student", "Other"];
-  const timelineOptions = ["less than 1 month", "1 Month", "2 Months", "3 Months", "6 Months", "1 Year", "Flexible"];
-  const designPreferencesOptions = ["Modern", "Minimalistic", "Corporate", "Creative", "User-Friendly", "Responsive Design", "Other"];
-  const audienceOptions = ["General Public", "Business Professionals", "Students", "Tech Enthusiasts", "Other"];
-  const noteTypes = ["Web Development Notes", "Programming Notes", "Engineering Notes", "DSA", "Other"];
-
-  const handleCategoryChange = (e) => {
-    setCategory(e.target.value);
-    setSubCategory("");
-    setProjectDetails({
+  const [formData, setFormData] = useState({
+    projects: {
+      subCategory: "",
       requirements: "",
       budget: "",
       timeline: "",
@@ -42,88 +15,118 @@ const ContactForm = () => {
       designPreferences: [],
       technicalSpecs: "",
       competitorReferences: "",
-      keyContacts: "",
-    });
-    setUserType("");
-    setLearningTopic("");
-    setMessage("");
-    setContact("");
-    setSelectedNoteType("");
-    setSubject("");
+      keyContacts: ""
+    },
+    notes: {
+      selectedNoteType: "",
+      subject: "",
+      requirements: "",
+      keyContacts: ""
+    },
+    teaching: {
+      userType: "",
+      learningTopic: "",
+      message: "",
+      contact: ""
+    },
+    other: {
+      requirements: "",
+      keyContacts: ""
+    }
+  });
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const projectOptions = ["E-commerce Website", "MERN Application", "Custom Software", "UI/UX Design", "Other"];
+  const teachingOptions = ["MERN Development", "Full Stack Development", "Programming Language", "DSA", "Other"];
+  const userTypes = ["Freelancer", "Startup", "Small Business", "Enterprise", "Student", "Other"];
+  const timelineOptions = ["less than 1 month", "1 Month", "2 Months", "3 Months", "6 Months", "1 Year", "Flexible"];
+  const audienceOptions = ["General Public", "Business Professionals", "Students", "Tech Enthusiasts", "Other"];
+  const designPreferencesOptions = ["Modern", "Minimalistic", "Corporate", "Creative", "User-Friendly", "Responsive Design", "Other"];
+  const noteTypes = ["Web Development Notes", "Programming Notes", "Engineering Notes", "DSA", "Other"];
+
+  const handleCategoryChange = (e) => {
+    const selectedCategory = e.target.value;
+    setCategory(selectedCategory);
+    setErrors({});
   };
 
-  const handleProjectDetailsChange = (e) => {
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setProjectDetails((prev) => ({
+    setFormData(prev => ({
       ...prev,
-      [name]: value,
+      [category]: {
+        ...prev[category],
+        [name]: value
+      }
     }));
   };
 
-  const handleDesignPreferenceChange = (e) => {
-    const value = e.target.value;
-    setProjectDetails((prev) => ({
+  const handleCheckboxChange = (e) => {
+    const { name, value, checked } = e.target;
+    setFormData(prev => ({
       ...prev,
-      designPreferences: prev.designPreferences.includes(value)
-        ? prev.designPreferences.filter((pref) => pref !== value)
-        : [...prev.designPreferences, value],
+      [category]: {
+        ...prev[category],
+        [name]: checked
+          ? [...prev[category][name], value]
+          : prev[category][name].filter(item => item !== value)
+      }
     }));
   };
 
-  const handleNoteTypeChange = (e) => {
-    setSelectedNoteType(e.target.value);
+  const validateForm = () => {
+    const newErrors = {};
+    
+    if (!category) {
+      newErrors.category = "Category is required";
+      return newErrors;
+    }
+
+    if (category === "projects") {
+      if (!formData.projects.subCategory) newErrors.subCategory = "Sub-category is required";
+      if (!formData.projects.requirements) newErrors.requirements = "Requirements are required";
+      if (!formData.projects.budget || formData.projects.budget < 300) newErrors.budget = "Budget must be at least 300";
+      if (!formData.projects.timeline) newErrors.timeline = "Timeline is required";
+      if (!formData.projects.audience) newErrors.audience = "Audience is required";
+      if (formData.projects.designPreferences.length === 0) newErrors.designPreferences = "At least one design preference is required";
+      if (!formData.projects.technicalSpecs) newErrors.technicalSpecs = "Technical specs are required";
+      if (!formData.projects.competitorReferences) newErrors.competitorReferences = "Competitor references are required";
+      if (!/^\d{10}$/.test(formData.projects.keyContacts)) newErrors.keyContacts = "Valid 10-digit phone number is required";
+    }
+
+    if (category === "notes") {
+      if (!formData.notes.selectedNoteType) newErrors.selectedNoteType = "Note type is required";
+      if (formData.notes.selectedNoteType === "Other" && !formData.notes.subject) newErrors.subject = "Subject is required for 'Other' type";
+      if (!formData.notes.requirements) newErrors.requirements = "Requirements are required";
+      if (!/^\d{10}$/.test(formData.notes.keyContacts)) newErrors.keyContacts = "Valid 10-digit phone number is required";
+    }
+
+    if (category === "teaching") {
+      if (!formData.teaching.userType) newErrors.userType = "User type is required";
+      if (!formData.teaching.learningTopic) newErrors.learningTopic = "Learning topic is required";
+      if (!formData.teaching.message) newErrors.message = "Message is required";
+      if (!/^\d{10}$/.test(formData.teaching.contact)) newErrors.contact = "Valid 10-digit phone number is required";
+    }
+
+    if (category === "other") {
+      if (!formData.other.requirements) newErrors.requirements = "Requirements are required";
+      if (!/^\d{10}$/.test(formData.other.keyContacts)) newErrors.keyContacts = "Valid 10-digit phone number is required";
+    }
+
+    return newErrors;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const validationErrors = validateForm();
+    setErrors(validationErrors);
 
-    let formData = {};
-
-    if (category === "projects") {
-      formData = {
-        category,
-        projects: {
-          subCategory,
-          requirements: projectDetails.requirements,
-          budget: projectDetails.budget,
-          timeline: projectDetails.timeline,
-          audience: projectDetails.audience,
-          designPreferences: projectDetails.designPreferences,
-          technicalSpecs: projectDetails.technicalSpecs,
-          competitorReferences: projectDetails.competitorReferences,
-          keyContacts: projectDetails.keyContacts,
-        },
-      };
-    } else if (category === "notes") {
-      formData = {
-        category,
-        notes: {
-          selectedNoteType,
-          subject: selectedNoteType === "Other" ? subject : "",
-          requirements: projectDetails.requirements,
-          keyContacts: projectDetails.keyContacts,
-        },
-      };
-    } else if (category === "teaching") {
-      formData = {
-        category,
-        teaching: {
-          userType,
-          learningTopic,
-          message,
-          contact,
-        },
-      };
-    } else if (category === "other") {
-      formData = {
-        category,
-        other: {
-          requirements: projectDetails.requirements,
-          keyContacts: projectDetails.keyContacts,
-        },
-      };
+    if (Object.keys(validationErrors).length > 0) {
+      return;
     }
 
+    setIsSubmitting(true);
     try {
       const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/LNE/contacts`, {
         method: "POST",
@@ -131,23 +134,58 @@ const ContactForm = () => {
           "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          category,
+          [category]: formData[category]
+        }),
       });
 
-      if (response.ok) {
-        alert("Form submitted successfully!");
-      } else {
+      if (!response.ok) {
         const errorData = await response.json();
-        alert(`Failed to submit form: ${errorData.message || "Unknown error"}`);
+        throw new Error(errorData.message || "Failed to submit form");
       }
+
+      alert("Form submitted successfully!");
+      setCategory("");
+      setFormData({
+        projects: {
+          subCategory: "",
+          requirements: "",
+          budget: "",
+          timeline: "",
+          audience: "",
+          designPreferences: [],
+          technicalSpecs: "",
+          competitorReferences: "",
+          keyContacts: ""
+        },
+        notes: {
+          selectedNoteType: "",
+          subject: "",
+          requirements: "",
+          keyContacts: ""
+        },
+        teaching: {
+          userType: "",
+          learningTopic: "",
+          message: "",
+          contact: ""
+        },
+        other: {
+          requirements: "",
+          keyContacts: ""
+        }
+      });
     } catch (error) {
       console.error("Error submitting form:", error);
-      alert("An error occurred while submitting the form.");
+      alert(error.message || "An error occurred while submitting the form.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="registerContainer" style={{ marginTop: "170px" }}>
+    <div className="loginContainer">
       <div className="container-fluid">
         <div className="row align-items-center justify-content-center">
           <div className="col-md-5 d-none d-md-flex align-items-center justify-content-center">
@@ -155,195 +193,358 @@ const ContactForm = () => {
           </div>
 
           <div className="col-md-6">
-            <h3 className="fw-bold text-center mb-2">Get in Touch</h3>
-            <p className="text-muted text-center mb-2">We'd love to hear from you!</p>
+            <h3 className="fw-bold text-center mb-2">📩 Get in Touch</h3>
+            <p className="text-muted text-center mb-4">We'd love to hear from you!</p>
 
             <form onSubmit={handleSubmit}>
-              <div className="mb-2">
+              <div className="mb-3">
                 <label className="form-label">Select a Category</label>
-                <select className="form-control" value={category} onChange={handleCategoryChange} required>
+                <select
+                  className={`form-control ${errors.category ? "is-invalid" : ""}`}
+                  style={{ borderColor: "#ff8c00" }}
+                  value={category}
+                  onChange={handleCategoryChange}
+                  required
+                >
                   <option value="">-- Select an Option --</option>
                   <option value="projects">Projects</option>
                   <option value="teaching">Teaching</option>
                   <option value="notes">Notes</option>
                   <option value="other">Other</option>
                 </select>
+                {errors.category && <div className="invalid-feedback">{errors.category}</div>}
               </div>
 
               {category === "projects" && (
                 <>
-                  <div className="mb-2">
-                    <label className="form-label">Which type of project?</label>
-                    <select className="form-control" value={subCategory} onChange={(e) => setSubCategory(e.target.value)} required>
-                      <option value="">-- Select an Option --</option>
-                      {projectOptions.map((option) => (
+                  <div className="mb-3">
+                    <label className="form-label">Project Type</label>
+                    <select
+                      className={`form-control ${errors.subCategory ? "is-invalid" : ""}`}
+                      style={{ borderColor: "#ff8c00" }}
+                      name="subCategory"
+                      value={formData.projects.subCategory}
+                      onChange={handleInputChange}
+                      required
+                    >
+                      <option value="">-- Select Project Type --</option>
+                      {projectOptions.map(option => (
                         <option key={option} value={option}>{option}</option>
                       ))}
                     </select>
+                    {errors.subCategory && <div className="invalid-feedback">{errors.subCategory}</div>}
                   </div>
 
-                  <div className="mb-2">
-                    <label className="form-label">Project Requirements</label>
-                    <textarea className="form-control" name="requirements" rows="3" value={projectDetails.requirements} onChange={handleProjectDetailsChange} required></textarea>
+                  <div className="mb-3">
+                    <label className="form-label">Requirements</label>
+                    <textarea
+                      className={`form-control ${errors.requirements ? "is-invalid" : ""}`}
+                      style={{ borderColor: "#ff8c00" }}
+                      name="requirements"
+                      rows="3"
+                      value={formData.projects.requirements}
+                      onChange={handleInputChange}
+                      required
+                    />
+                    {errors.requirements && <div className="invalid-feedback">{errors.requirements}</div>}
                   </div>
 
-                  <div className="mb-2">
-                    <label className="form-label">Budget</label>
-                    <input type="number" className="form-control" name="budget" value={projectDetails.budget} onChange={handleProjectDetailsChange} required />
+                  <div className="mb-3">
+                    <label className="form-label">Budget (Minimum ₹300)</label>
+                    <input
+                      type="number"
+                      className={`form-control ${errors.budget ? "is-invalid" : ""}`}
+                      style={{ borderColor: "#ff8c00" }}
+                      name="budget"
+                      min="300"
+                      value={formData.projects.budget}
+                      onChange={handleInputChange}
+                      required
+                    />
+                    {errors.budget && <div className="invalid-feedback">{errors.budget}</div>}
                   </div>
 
-                  <div className="mb-2">
-                    <label className="form-label">Design Preference</label>
-                    <select className="form-control" name="designPreferences" value={projectDetails.designPreferences} onChange={handleDesignPreferenceChange} required multiple>
-                      <option value="">-- Select an Option --</option>
-                      {designPreferencesOptions.map((option) => (
-                        <option key={option} value={option}>{option}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="mb-2">
+                  <div className="mb-3">
                     <label className="form-label">Timeline</label>
-                    <select className="form-control" name="timeline" value={projectDetails.timeline} onChange={handleProjectDetailsChange} required>
+                    <select
+                      className={`form-control ${errors.timeline ? "is-invalid" : ""}`}
+                      style={{ borderColor: "#ff8c00" }}
+                      name="timeline"
+                      value={formData.projects.timeline}
+                      onChange={handleInputChange}
+                      required
+                    >
                       <option value="">-- Select Timeline --</option>
-                      {timelineOptions.map((option) => (
+                      {timelineOptions.map(option => (
                         <option key={option} value={option}>{option}</option>
                       ))}
                     </select>
+                    {errors.timeline && <div className="invalid-feedback">{errors.timeline}</div>}
                   </div>
 
-                  <div className="mb-2">
-                    <label className="form-label">Audience</label>
-                    <select className="form-control" name="audience" value={projectDetails.audience} onChange={handleProjectDetailsChange} required>
-                      <option value="">-- Select an Option --</option>
-                      {audienceOptions.map((option) => (
+                  <div className="mb-3">
+                    <label className="form-label">Target Audience</label>
+                    <select
+                      className={`form-control ${errors.audience ? "is-invalid" : ""}`}
+                      style={{ borderColor: "#ff8c00" }}
+                      name="audience"
+                      value={formData.projects.audience}
+                      onChange={handleInputChange}
+                      required
+                    >
+                      <option value="">-- Select Audience --</option>
+                      {audienceOptions.map(option => (
                         <option key={option} value={option}>{option}</option>
                       ))}
                     </select>
+                    {errors.audience && <div className="invalid-feedback">{errors.audience}</div>}
                   </div>
 
-                  <div className="mb-2">
+                  <div className="mb-3">
+                    <label className="form-label">Design Preferences</label>
+                    <div className="d-flex flex-wrap gap-3">
+                      {designPreferencesOptions.map(option => (
+                        <div key={option} className="form-check">
+                          <input
+                            className="form-check-input"
+                            type="checkbox"
+                            name="designPreferences"
+                            value={option}
+                            checked={formData.projects.designPreferences.includes(option)}
+                            onChange={handleCheckboxChange}
+                            id={`design-${option}`}
+                            required={formData.projects.designPreferences.length === 0}
+                          />
+                          <label className="form-check-label" htmlFor={`design-${option}`}>
+                            {option}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                    {errors.designPreferences && <div className="text-danger small">{errors.designPreferences}</div>}
+                  </div>
+
+                  <div className="mb-3">
                     <label className="form-label">Technical Specifications</label>
-                    <input type="text" className="form-control" name="technicalSpecs" value={projectDetails.technicalSpecs} onChange={handleProjectDetailsChange} required />
+                    <input
+                      type="text"
+                      className={`form-control ${errors.technicalSpecs ? "is-invalid" : ""}`}
+                      style={{ borderColor: "#ff8c00" }}
+                      name="technicalSpecs"
+                      value={formData.projects.technicalSpecs}
+                      onChange={handleInputChange}
+                      required
+                    />
+                    {errors.technicalSpecs && <div className="invalid-feedback">{errors.technicalSpecs}</div>}
                   </div>
 
-                  <div className="mb-2">
+                  <div className="mb-3">
                     <label className="form-label">Competitor References</label>
-                    <input type="text" className="form-control" name="competitorReferences" value={projectDetails.competitorReferences} onChange={handleProjectDetailsChange} required />
+                    <input
+                      type="text"
+                      className={`form-control ${errors.competitorReferences ? "is-invalid" : ""}`}
+                      style={{ borderColor: "#ff8c00" }}
+                      name="competitorReferences"
+                      value={formData.projects.competitorReferences}
+                      onChange={handleInputChange}
+                      required
+                    />
+                    {errors.competitorReferences && <div className="invalid-feedback">{errors.competitorReferences}</div>}
                   </div>
 
-                  <div className="mb-2">
-                    <label className="form-label">Contact Details</label>
-                    <input type="number" className="form-control" name="keyContacts" value={projectDetails.keyContacts} onChange={handleProjectDetailsChange} required />
+                  <div className="mb-3">
+                    <label className="form-label">Contact Number</label>
+                    <input
+                      type="tel"
+                      className={`form-control ${errors.keyContacts ? "is-invalid" : ""}`}
+                      style={{ borderColor: "#ff8c00" }}
+                      name="keyContacts"
+                      value={formData.projects.keyContacts}
+                      onChange={handleInputChange}
+                      pattern="[0-9]{10}"
+                      required
+                    />
+                    {errors.keyContacts && <div className="invalid-feedback">{errors.keyContacts}</div>}
                   </div>
                 </>
               )}
 
               {category === "notes" && (
                 <>
-                  <div className="mb-2">
-                    <label className="form-label">What type of notes do you need?</label>
+                  <div className="mb-3">
+                    <label className="form-label">Note Type</label>
                     <select
-                      className="form-control"
-                      value={selectedNoteType}
-                      onChange={handleNoteTypeChange}
+                      className={`form-control ${errors.selectedNoteType ? "is-invalid" : ""}`}
+                      style={{ borderColor: "#ff8c00" }}
+                      name="selectedNoteType"
+                      value={formData.notes.selectedNoteType}
+                      onChange={handleInputChange}
                       required
                     >
-                      <option value="">-- Select an Option --</option>
-                      {noteTypes.map((option) => (
+                      <option value="">-- Select Note Type --</option>
+                      {noteTypes.map(option => (
                         <option key={option} value={option}>{option}</option>
                       ))}
                     </select>
+                    {errors.selectedNoteType && <div className="invalid-feedback">{errors.selectedNoteType}</div>}
                   </div>
 
-                  {selectedNoteType === "Other" && (
-                    <div className="mb-2">
-                      <label className="form-label">Enter Subject</label>
+                  {formData.notes.selectedNoteType === "Other" && (
+                    <div className="mb-3">
+                      <label className="form-label">Subject</label>
                       <input
                         type="text"
-                        className="form-control"
-                        value={subject}
-                        onChange={(e) => setSubject(e.target.value)}
+                        className={`form-control ${errors.subject ? "is-invalid" : ""}`}
+                        style={{ borderColor: "#ff8c00" }}
+                        name="subject"
+                        value={formData.notes.subject}
+                        onChange={handleInputChange}
                         required
                       />
+                      {errors.subject && <div className="invalid-feedback">{errors.subject}</div>}
                     </div>
                   )}
 
-                  <div className="mb-2">
-                    <label className="form-label">Additional Requirements</label>
+                  <div className="mb-3">
+                    <label className="form-label">Requirements</label>
                     <textarea
-                      className="form-control"
+                      className={`form-control ${errors.requirements ? "is-invalid" : ""}`}
+                      style={{ borderColor: "#ff8c00" }}
                       name="requirements"
                       rows="3"
-                      value={projectDetails.requirements}
-                      onChange={handleProjectDetailsChange}
-                      required
-                    ></textarea>
-                  </div>
-
-                  <div className="mb-2">
-                    <label className="form-label">Contact Details</label>
-                    <input
-                      type="number"
-                      className="form-control"
-                      name="keyContacts"
-                      value={projectDetails.keyContacts}
-                      onChange={handleProjectDetailsChange}
+                      value={formData.notes.requirements}
+                      onChange={handleInputChange}
                       required
                     />
-                  </div>
-                </>
-              )}
-
-              {category === "other" && (
-                <>
-                  <div className="mb-2">
-                    <label className="form-label">Requirements</label>
-                    <textarea className="form-control" name="requirements" rows="3" value={projectDetails.requirements} onChange={handleProjectDetailsChange} required></textarea>
+                    {errors.requirements && <div className="invalid-feedback">{errors.requirements}</div>}
                   </div>
 
-                  <div className="mb-2">
-                    <label className="form-label">Contact Details</label>
-                    <input type="number" className="form-control" name="keyContacts" value={projectDetails.keyContacts} onChange={handleProjectDetailsChange} required />
+                  <div className="mb-3">
+                    <label className="form-label">Contact Number</label>
+                    <input
+                      type="tel"
+                      className={`form-control ${errors.keyContacts ? "is-invalid" : ""}`}
+                      style={{ borderColor: "#ff8c00" }}
+                      name="keyContacts"
+                      value={formData.notes.keyContacts}
+                      onChange={handleInputChange}
+                      pattern="[0-9]{10}"
+                      required
+                    />
+                    {errors.keyContacts && <div className="invalid-feedback">{errors.keyContacts}</div>}
                   </div>
                 </>
               )}
 
               {category === "teaching" && (
                 <>
-                  <div className="mb-2">
+                  <div className="mb-3">
                     <label className="form-label">Who are you?</label>
-                    <select className="form-control" value={userType} onChange={(e) => setUserType(e.target.value)} required>
-                      <option value="">-- Select an Option --</option>
-                      {userTypes.map((type) => (
-                        <option key={type} value={type}>{type}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="mb-2">
-                    <label className="form-label">What do you want to learn?</label>
-                    <select className="form-control" value={learningTopic} onChange={(e) => setLearningTopic(e.target.value)} required>
-                      <option value="">-- Select an Option --</option>
-                      {teachingOptions.map((option) => (
+                    <select
+                      className={`form-control ${errors.userType ? "is-invalid" : ""}`}
+                      style={{ borderColor: "#ff8c00" }}
+                      name="userType"
+                      value={formData.teaching.userType}
+                      onChange={handleInputChange}
+                      required
+                    >
+                      <option value="">-- Select User Type --</option>
+                      {userTypes.map(option => (
                         <option key={option} value={option}>{option}</option>
                       ))}
                     </select>
+                    {errors.userType && <div className="invalid-feedback">{errors.userType}</div>}
                   </div>
 
-                  <div className="mb-2">
+                  <div className="mb-3">
+                    <label className="form-label">What do you want to learn?</label>
+                    <select
+                      className={`form-control ${errors.learningTopic ? "is-invalid" : ""}`}
+                      name="learningTopic"
+                      value={formData.teaching.learningTopic}
+                      onChange={handleInputChange}
+                      required
+                    >
+                      <option value="">-- Select Learning Topic --</option>
+                      {teachingOptions.map(option => (
+                        <option key={option} value={option}>{option}</option>
+                      ))}
+                    </select>
+                    {errors.learningTopic && <div className="invalid-feedback">{errors.learningTopic}</div>}
+                  </div>
+
+                  <div className="mb-3">
                     <label className="form-label">Message</label>
-                    <textarea className="form-control" rows="2" value={message} onChange={(e) => setMessage(e.target.value)} required></textarea>
+                    <textarea
+                      className={`form-control ${errors.message ? "is-invalid" : ""}`}
+                      style={{ borderColor: "#ff8c00" }}
+                      name="message"
+                      rows="3"
+                      value={formData.teaching.message}
+                      onChange={handleInputChange}
+                      required
+                    />
+                    {errors.message && <div className="invalid-feedback">{errors.message}</div>}
                   </div>
 
-                  <div className="mb-2">
-                    <label className="form-label">Contact Details</label>
-                    <input type="text" className="form-control" value={contact} onChange={(e) => setContact(e.target.value)} required />
+                  <div className="mb-3">
+                    <label className="form-label">Contact Number</label>
+                    <input
+                      type="tel"
+                      className={`form-control ${errors.contact ? "is-invalid" : ""}`}
+                      style={{ borderColor: "#ff8c00" }}
+                      name="contact"
+                      value={formData.teaching.contact}
+                      onChange={handleInputChange}
+                      pattern="[0-9]{10}"
+                      required
+                    />
+                    {errors.contact && <div className="invalid-feedback">{errors.contact}</div>}
                   </div>
                 </>
               )}
 
-              <button className="btn btn-orange w-100 mb-2">Submit</button>
+              {category === "other" && (
+                <>
+                  <div className="mb-3">
+                    <label className="form-label">Requirements</label>
+                    <textarea
+                      className={`form-control ${errors.requirements ? "is-invalid" : ""}`}
+                      style={{ borderColor: "#ff8c00" }}
+                      name="requirements"
+                      rows="3"
+                      value={formData.other.requirements}
+                      onChange={handleInputChange}
+                      required
+                    />
+                    {errors.requirements && <div className="invalid-feedback">{errors.requirements}</div>}
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="form-label">Contact Number</label>
+                    <input
+                      type="tel"
+                      className={`form-control ${errors.keyContacts ? "is-invalid" : ""}`}
+                      style={{ borderColor: "#ff8c00" }}
+                      name="keyContacts"
+                      value={formData.other.keyContacts}
+                      onChange={handleInputChange}
+                      pattern="[0-9]{10}"
+                      required
+                    />
+                    {errors.keyContacts && <div className="invalid-feedback">{errors.keyContacts}</div>}
+                  </div>
+                </>
+              )}
+
+              <button 
+                type="submit" 
+                className="btn btn-orange w-100 mt-3 create-form-save-btn"
+                disabled={isSubmitting}
+                style={{ backgroundColor: "#ff8c00", color: "white" }}
+              >
+                {isSubmitting ? "Submitting..." : "Submit"}
+              </button>
             </form>
           </div>
         </div>

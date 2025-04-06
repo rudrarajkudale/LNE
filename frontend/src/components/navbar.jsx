@@ -1,27 +1,46 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../styles/Navbar.css";
 import Logo from "../assets/Logo.png";
 import FlashMsg from "../utils/FlashMsg";
+import { FaBars, FaKey, FaSignOutAlt, FaCrown } from "react-icons/fa";
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [user, setUser] = useState(null);
   const [flashMessage, setFlashMessage] = useState(null);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('');
+
+  useEffect(() => {
+    const path = location.pathname;
+    if (path.includes('/projects')) setActiveTab('projects');
+    else if (path.includes('/teaching')) setActiveTab('teaching');
+    else if (path.includes('/notes')) setActiveTab('notes');
+    else if (path.includes('/admin')) setActiveTab('admin');
+  }, [location]);
 
   useEffect(() => {
     const fetchUser = async () => {
+      
       try {
         const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/auth/user`, {
           withCredentials: true,
         });
         setUser(data.user);
+        const adminIds = import.meta.env.VITE_ADMIN_IDS?.split(',') || [];
+        if (data.user?.googleId && adminIds.includes(data.user.googleId)) {
+          setIsAdmin(true);
+        }
       } catch (error) {
         if (error.response?.status === 401) {
           setUser(null);
+          setIsAdmin(false);
         } else {
           console.error("Error fetching user:", error);
         }
@@ -48,6 +67,7 @@ const Navbar = () => {
       });
       if (response.ok) {
         setUser(null);
+        setIsAdmin(false);
         setTimeout(() => {
           navigate("/");
           window.location.reload();
@@ -64,6 +84,10 @@ const Navbar = () => {
     navigate("/forgot-password");
   };
 
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(!mobileMenuOpen);
+  };
+
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-black px-3">
       <div className="container-fluid">
@@ -71,66 +95,134 @@ const Navbar = () => {
           <img src={Logo} alt="Logo" width="100" />
         </a>
 
-        <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-          <span className="navbar-toggler-icon"></span>
-        </button>
+        <span 
+          className="navbar-toggler" 
+          type="button" 
+          onClick={toggleMobileMenu}
+          aria-label="Toggle navigation"
+        >
+          <FaBars />
+        </span>
 
-        <div className="collapse navbar-collapse" id="navbarNav">
+        <div className={`collapse navbar-collapse ${mobileMenuOpen ? 'show' : ''}`} id="navbarNav">
           <ul className="navbar-nav me-auto">
-            <li className="nav-item"><a className="nav-link text-white" href="/projects">💡 Projects</a></li>
-            <li className="nav-item"><a className="nav-link text-white" href="/teaching">🧑‍🏫 Teaching</a></li>
-            <li className="nav-item"><a className="nav-link text-white" href="/notes">📂 Notes</a></li>
+            <li className="nav-item">
+              <a 
+                className={`nav-link text-white ${activeTab === 'projects' ? 'active' : ''}`} 
+                href="/projects"
+                onClick={() => setActiveTab('projects')}
+              >
+                💡 Projects
+              </a>
+            </li>
+            <li className="nav-item">
+              <a 
+                className={`nav-link text-white ${activeTab === 'teaching' ? 'active' : ''}`} 
+                href="/teaching"
+                onClick={() => setActiveTab('teaching')}
+              >
+                🧑‍🏫 Teaching
+              </a>
+            </li>
+            <li className="nav-item">
+              <a 
+                className={`nav-link text-white ${activeTab === 'notes' ? 'active' : ''}`} 
+                href="/notes"
+                onClick={() => setActiveTab('notes')}
+              >
+                📂 Notes
+              </a>
+            </li>
           </ul>
 
-          {user ? (
-            <div className="d-flex align-items-center position-relative">
-              <span
-                className="text-black fw-bold me-3 cursor-pointer nav-link"
-                style={{ transition: "color 0.3s" }}
-                onMouseEnter={(e) => (e.target.style.color = "#ff8c00")}
-                onMouseLeave={(e) => (e.target.style.color = "black")}
-                onClick={() => setShowDropdown(!showDropdown)}
-              >
-                {user.fullName.split(" ")[0]}
-              </span>
-              {showDropdown && (
-                <div
-                  className="dropdown-menu show position-absolute mt-2"
-                  style={{
-                    top: "100%",
-                    right: "0",
-                    border: "1px solid #ff8c00",
-                    borderRadius: "8px",
-                    padding: "10px",
-                    backgroundColor: "#fff",
-                  }}
-                  onMouseEnter={() => setShowDropdown(true)}
-                  onMouseLeave={() => setShowDropdown(false)}
-                >
+          <div className="d-flex align-items-center gap-3">
+            {user ? (
+              <>
+                {isAdmin && (
+                  <ul className="navbar-nav me-auto admin-btn">
+                    <li className="nav-item">
+                      <a 
+                        className={`nav-link text-white ${activeTab === 'admin' ? 'active' : ''}`} 
+                        href="/admin"
+                        onClick={() => setActiveTab('admin')}
+                      >
+                        <FaCrown className="me-1" /> Admin
+                      </a>
+                    </li>
+                  </ul>
+                )}
+                
+                <div className="desktop-user-dropdown">
+                  <div className="position-relative user-dropdown">
+                    <span
+                      className="user-name"
+                      onClick={(e) => {
+                        e.stopPropagation(); 
+                        setShowDropdown(!showDropdown);
+                      }}
+                    >
+                      {user.fullName.split(" ")[0]}
+                    </span>
+                    {showDropdown && (
+                      <div
+                        className="dropdown-menu show"
+                        onMouseEnter={() => setShowDropdown(true)}
+                        onMouseLeave={() => setShowDropdown(false)}
+                      >
+                        <button
+                          className="dropdown-item change-password"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleChangePassword();
+                            setShowDropdown(false);
+                          }}
+                        >
+                          <FaKey className="me-2" /> Change Password
+                        </button>
+                        <button
+                          className="dropdown-item logout"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleLogout();
+                            setShowDropdown(false);
+                          }}
+                        >
+                          <FaSignOutAlt className="me-2" /> Logout
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="mobile-user-actions">
                   <button
-                    className="dropdown-item"
-                    style={{ color: "blue" }}
+                    className="mobile-action-btn change-password"
                     onClick={handleChangePassword}
                   >
-                    Change Password
+                    <FaKey className="me-2" /> Change Password
                   </button>
                   <button
-                    className="dropdown-item"
-                    style={{ color: "red" }}
+                    className="mobile-action-btn logout"
                     onClick={handleLogout}
                   >
-                    Logout
+                    <FaSignOutAlt className="me-2" /> Logout
                   </button>
                 </div>
-              )}
-            </div>
-          ) : (
-            <button onClick={() => navigate("/login")} className="btn btn-outline-warning">Login</button>
-          )}
+              </>
+            ) : (
+              <a href="/login" className="login">Login</a>
+            )}
+          </div>
         </div>
       </div>
 
-      {flashMessage && <FlashMsg message={flashMessage.message} type={flashMessage.type} onClose={() => setFlashMessage(null)} />}
+      {flashMessage && (
+        <FlashMsg 
+          message={flashMessage.message} 
+          type={flashMessage.type} 
+          onClose={() => setFlashMessage(null)} 
+        />
+      )}
     </nav>
   );
 };

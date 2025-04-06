@@ -1,158 +1,238 @@
-import React, { useEffect, useState } from "react";
-import SearchBar from "./SearchBar";
-import "../styles/Projects.css"; // Import the CSS file
+import React, { useState, useEffect } from 'react';
+import { FaEdit, FaTrash, FaExternalLinkAlt, FaImage, FaInfoCircle } from 'react-icons/fa';
+import axios from 'axios';
+import ProjectEdit from '../EditForm/ProjectEdit';
+import '../styles/Main.css';
+import SearchBar from './SearchBar';
 
-const Project = () => {
+const Projects = () => {
   const [projects, setProjects] = useState([]);
-  const [filteredProjects, setFilteredProjects] = useState([]);
+  const [editingProject, setEditingProject] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [user, setUser] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-
-  // Fetch projects from the database
-  const fetchProjects = async () => {
-    try {
-      const response = await fetch("/api/data/projects"); // Replace with your API endpoint
-      const data = await response.json();
-      setProjects(data);
-      setFilteredProjects(data); // Initialize filtered projects with all projects
-    } catch (error) {
-      console.error("Error fetching projects:", error);
-    }
-  };
+  const [filteredProjects, setFilteredProjects] = useState([]);
+  const [showDescriptions, setShowDescriptions] = useState({});
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const projectsResponse = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/data/projects`);
+        setProjects(projectsResponse.data);
+        setFilteredProjects(projectsResponse.data);
+        const initialShowState = {};
+        projectsResponse.data.forEach(project => initialShowState[project._id] = false);
+        setShowDescriptions(initialShowState);
+      } catch (err) {
+        console.error('Failed to fetch projects:', err);
+      }
+    };
+
+    const fetchUser = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const userResponse = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/api/auth/user`,
+          { 
+            headers: { "Authorization": `Bearer ${token}` },
+            withCredentials: true 
+          }
+        );
+        setUser(userResponse.data.user);
+        const adminIds = import.meta.env.VITE_ADMIN_IDS?.split(",") || [];
+        setIsAdmin(!!(userResponse.data.user?.googleId && adminIds.includes(userResponse.data.user.googleId)));
+      } catch (err) {
+        setUser(null);
+        setIsAdmin(false);
+      }
+    };
+
     fetchProjects();
+    fetchUser();
   }, []);
 
-  // Handle project deletion
-  const handleDelete = async (id) => {
+  const handleDelete = async (projectId) => {
     try {
-      await fetch(`/api/projects/${id}`, { method: "DELETE" }); // Replace with your API endpoint
-      setProjects((prevProjects) => prevProjects.filter((project) => project._id !== id));
-      setFilteredProjects((prevProjects) => prevProjects.filter((project) => project._id !== id));
-    } catch (error) {
-      console.error("Error deleting project:", error);
+      const token = localStorage.getItem('token');
+      await axios.delete(
+        `${import.meta.env.VITE_BACKEND_URL}/api/admin/projects/${projectId}`,
+        {
+          headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          withCredentials: true
+        }
+      );
+      setProjects(prevProjects => prevProjects.filter(project => project._id !== projectId));
+      setFilteredProjects(prevFiltered => prevFiltered.filter(project => project._id !== projectId));
+      window.location.reload();
+    } catch (err) {
+      console.error('Failed to delete project:', err);
     }
   };
 
-  // Handle search
+  const handleUpdate = async (updatedProject) => {
+    try {
+      const token = localStorage.getItem('token');
+      const { data } = await axios.put(
+        `${import.meta.env.VITE_BACKEND_URL}/api/admin/projects/${updatedProject._id}`,
+        updatedProject,
+        {
+          headers: { "Authorization": `Bearer ${token}` },
+          withCredentials: true
+        }
+      );
+      setProjects(prev => prev.map(p => p._id === data._id ? data : p));
+      setFilteredProjects(prev => prev.map(p => p._id === data._id ? data : p));
+      setEditingProject(null);
+      setIsEditing(false);
+      window.location.reload();
+    } catch (err) {
+      console.error('Failed to update project:', err);
+    }
+  };
+
+  const handleEditClick = (project) => {
+    setEditingProject(project);
+    setIsEditing(true);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingProject(null);
+    setIsEditing(false);
+  };
+
   const handleSearch = (query) => {
     setSearchQuery(query);
     const filtered = projects.filter((project) => {
       return (
         project.title.toLowerCase().includes(query.toLowerCase()) ||
-        project.description.toLowerCase().includes(query.toLowerCase()) ||
-        project.technologies.toLowerCase().includes(query.toLowerCase())
+        project.technologies.toLowerCase().includes(query.toLowerCase()) ||
+        project.description.toLowerCase().includes(query.toLowerCase())
       );
     });
     setFilteredProjects(filtered);
   };
 
-  // Generate suggestions based on the search query
+  const toggleDescription = (projectId) => {
+    setShowDescriptions(prev => ({
+      ...prev,
+      [projectId]: !prev[projectId]
+    }));
+  };
+
   const generateSuggestions = () => {
     if (searchQuery.length === 0) return [];
     const query = searchQuery.toLowerCase();
-
     const suggestions = projects
       .flatMap((project) => {
         const matches = [];
-
-        // Check title
-        if (project.title.toLowerCase().includes(query)) {
-          matches.push(`${project.title}`);
-        }
-
-        // Check description
+        if (project.title.toLowerCase().includes(query)) matches.push(`${project.title}`);
+        if (project.technologies.toLowerCase().includes(query)) matches.push(`${project.technologies}`);
         const descriptionWords = project.description.toLowerCase().split(" ");
-        const matchedDescriptionWord = descriptionWords.find((word) =>
-          word.includes(query)
-        );
-        if (matchedDescriptionWord) {
-          matches.push(`${matchedDescriptionWord}`);
-        }
-
-        // Check technologies
-        const technologies = project.technologies.toLowerCase().split(",");
-        const matchedTechnology = technologies.find((tech) =>
-          tech.trim().includes(query)
-        );
-        if (matchedTechnology) {
-          matches.push(`${matchedTechnology.trim()}`);
-        }
-
+        const matchedDescriptionWord = descriptionWords.find((word) => word.includes(query));
+        if (matchedDescriptionWord) matches.push(`${matchedDescriptionWord}`);
         return matches;
       })
-      .slice(0, 5); // Limit to 5 suggestions
-
-    return suggestions;
+      .slice(0, 5);
+    return [...new Set(suggestions)];
   };
 
   const suggestions = generateSuggestions();
 
   return (
-    <div className="container mt-4">
-      <SearchBar onSearch={handleSearch} />
+    <div className="section-container">
+      <SearchBar onSearch={handleSearch} suggestions={suggestions} />
 
-      {/* Display search suggestions */}
-      {suggestions.length > 0 && (
-        <div className="suggestions-container">
-          {suggestions.map((suggestion, index) => (
-            <div key={index} className="suggestion-item">
-              {suggestion}
+      <div className="section-grid">
+        {(searchQuery ? filteredProjects : projects).map(project => (
+          <div key={project._id} className="section-card">
+            <div className="section-admin-actions">
+              {isAdmin && (
+                <>
+                  <button onClick={() => handleEditClick(project)} aria-label="Edit project">
+                    <FaEdit className="section-icon section-edit-btn" />
+                  </button>
+                  <button onClick={() => handleDelete(project._id)} aria-label="Delete project">
+                    <FaTrash className="section-icon section-del-btn" />
+                  </button>
+                </>
+              )}
+              <button 
+                onClick={() => toggleDescription(project._id)}
+                aria-label="Show description"
+                className="section-info-btn"
+              >
+                <FaInfoCircle className="section-icon section-info-btn" />
+              </button>
             </div>
-          ))}
-        </div>
-      )}
 
-      <h2 className="text-center mb-4">Projects</h2>
-      <div className="row">
-        {filteredProjects.length > 0 ? (
-          filteredProjects.map((project) => (
-            <div key={project._id} className="col-md-4 mb-4">
-              <div className="card project-card">
-                <img
-                  src={project.imgSrc}
-                  className="card-img-top project-image"
-                  alt={project.title}
-                />
-                <div className="card-body project-details">
-                  <h5 className="card-title">{project.title}</h5>
-                  <p className="card-text">{project.description}</p>
+            <div className="section-card-image">
+              {project.imgSrc ? (
+                <img src={project.imgSrc} alt={project.title} loading="lazy" />
+              ) : (
+                <div className="section-image-placeholder">
+                  <FaImage className="section-placeholder-icon" />
+                  <h3>{project.title}</h3>
+                </div>
+              )}
+            </div>
 
-                  {/* Tech Used Section */}
-                  <div className="tech-used">
-                    {project.technologies.split(",").map((tech, idx) => (
-                      <span key={idx} className="tech-chip">{tech.trim()}</span>
-                    ))}
+            <div className="section-card-overlay">
+              <div className="section-card-details">
+                {!showDescriptions[project._id] ? (
+                  <>
+                    <h3>{project.title}</h3>
+                    <div className="section-technologies">
+                      {project.technologies}
+                    </div>
+                  </>
+                ) : (
+                  <div className="section-description">
+                    <p>{project.description}</p>
                   </div>
-
-                  {/* Buttons Section */}
-                  <div className="d-flex justify-content-between mt-3">
-                    <a
-                      href={project.liveDemoSrc}
-                      target="_blank"
+                )}
+                <div className="section-card-actions">
+                  {project.liveDemoSrc && (
+                    <a 
+                      href={project.liveDemoSrc} 
+                      target="_blank" 
                       rel="noopener noreferrer"
-                      className="btn live-demo-btn"
+                      className="section-action-btn"
                     >
-                      🚀 Live Demo
+                      <FaExternalLinkAlt className="section-icon" /> Demo
                     </a>
-                    <button className="btn snapshot-btn">📸 Snapshot</button>
-                    <button
-                      className="btn btn-danger"
-                      onClick={() => handleDelete(project._id)}
+                  )}
+                  {project.snapshotSrc && (
+                    <a 
+                      href={project.snapshotSrc} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="section-action-btn"
                     >
-                      🗑 Delete
-                    </button>
-                  </div>
+                      <FaImage className="section-icon" /> Snapshots
+                    </a>
+                  )}
                 </div>
               </div>
             </div>
-          ))
-        ) : (
-          <p className="text-center">No projects found.</p>
-        )}
+          </div>
+        ))}
       </div>
+
+      {isEditing && editingProject && (
+        <div className="section-edit-modal">
+          <ProjectEdit 
+            project={editingProject}
+            onSuccess={handleUpdate}
+            onCancel={handleCancelEdit}
+          />
+        </div>
+      )}
     </div>
   );
 };
 
-export default Project;
+export default Projects;

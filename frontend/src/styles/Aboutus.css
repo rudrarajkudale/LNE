@@ -1,13 +1,20 @@
+.about-container {
+  width: 100vw;
+  position: relative;
+  left: -7.2rem !important;
+}
+
 .business-banner {
+  width: 100% !important;
   border-radius: 15px;
   padding: 50px;
-  margin-top: 5%;
 }
 
 .text-section .title {
   font-size: 2.5rem;
   font-weight: bold;
   color: #333;
+  text-align: left;
 }
 
 .text-section .description {
@@ -15,7 +22,9 @@
   color: #666;
   margin-bottom: 20px;
   padding: 12px 10px;
-  font-family:'Times New Roman', Times, serif
+  font-family: 'Times New Roman', Times, serif;
+  text-align: justify;
+  text-justify: inter-word;
 }
 
 .cta-button {
@@ -34,6 +43,7 @@
   height: auto;
   display: block;
 }
+
 body {
   background-color: #fdf7e8;
 }
@@ -41,9 +51,11 @@ body {
 .service-card {
   border-radius: 10px;
   padding: 20px;
-  text-align: center;
+  text-align: left;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease-in-out;
+  height: 100%;
+  text-align: justify;
 }
 
 .service-card:hover {
@@ -63,19 +75,21 @@ body {
 }
 
 .icon {
-  margin-bottom: 15px;
-  color: #333;
+  color: rgb(31, 30, 30);
 }
+
 .about-us-section {
   background-color: #ffdb7d;
   padding: 50px 0;
   border-radius: 10px;
+  padding-right: 5rem;
+  text-align: justify;
 }
 
 .about-img {
   max-width: 70%;
   border-radius: 10px;
-  padding: 10px 15px;
+  margin-left: 5rem;
 }
 
 .about-details {
@@ -91,10 +105,12 @@ body {
   color: #555;
   font-size: 18px;
 }
+
 .projects-section {
-  background-color: #f8f5f0;
+  background: linear-gradient(135deg, #f8f5f0 0%, #e8e1d5 100%);
   padding: 60px 20px;
   border-radius: 15px;
+  text-align: center;
 }
 
 .section-title {
@@ -106,23 +122,28 @@ body {
 .section-text {
   font-size: 1.1rem;
   color: #555;
+  text-align: justify;
+  text-justify: inter-word;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .project-btn {
-  background-color: #222; /* Dark button */
-  color: #fff;
-  width: 100px;
+  width: 10rem !important;
+  background-color: transparent;
+  color: #ff9900;
   font-size: 0.8rem;
   font-weight: bold;
   padding: 12px 24px;
   border-radius: 30px;
-  border: 2px solid transparent;
+  border: 2px solid #ff9900;
   transition: all 0.3s ease-in-out;
   box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.15);
 }
 
 .project-btn:hover {
-  background-color: #ff9900; /* Highlight color on hover */
+  background-color: #ff9900;
   border-color: #ff9900;
   color: white;
   transform: scale(1.05);
@@ -133,7 +154,6 @@ body {
   transform: scale(0.98);
   box-shadow: 0px 5px 15px rgba(255, 153, 0, 0.5);
 }
-
 
 .project-card {
   border-radius: 15px;
@@ -165,7 +185,107 @@ body {
   padding: 6px 12px;
   border-radius: 5px;
 }
-.icon {
-  color: rgb(31, 30, 30); /* Blue color */
-  margin-right: 10px;
+
+/* For tablets and below */
+@media (max-width: 778px) {
+  .about-container {
+    left: -0.7rem !important;
+    width: 100vw;
+  }
+
+  .business-banner {
+    padding: 30px 20px;
+    margin: -10rem 0;
+  }
+
+  .text-section .title {
+    font-size: 2rem;
+  }
+
+  .text-section .description {
+    font-size: 1rem;
+    padding: 10px 8px;
+  }
+
+  .cta-button {
+    font-size: 0.8rem;
+    padding: 12px 8px;
+  }
+
+  .about-img {
+    max-width: 90%;
+    margin-left: 1rem;
+  }
+
+  .about-us-section {
+    padding: 30px 2rem;
+  }
+
+  .section-title {
+    font-size: 1.8rem;
+  }
+
+  .section-text {
+    font-size: 1rem;
+    padding: 0 10px;
+  }
+
+  .project-btn {
+    width: 100%;
+    padding: 10px 16px;
+    font-size: 0.75rem;
+  }
+
+  .img-fluid, .text-section button{
+    margin: 3rem auto 0 auto;
+    display: block;
+  }
+  
+}
+
+/* For mobile devices */
+@media (max-width: 576px) {
+  .text-section .title {
+    font-size: 1.6rem;
+    text-align: center;
+  }
+
+  .text-section .description {
+    text-align: center;
+  }
+
+  .cta-button {
+    width: 100%;
+  }
+
+  .about-details h3 {
+    font-size: 20px;
+    text-align: center;
+  }
+
+  .about-details span {
+    font-size: 16px;
+    text-align: center;
+  }
+
+  .projects-section {
+    padding: 40px 10px;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+  }
+
+  .section-text {
+    font-size: 0.95rem;
+  }
+
+  .project-btn {
+    font-size: 0.7rem;
+    padding: 10px 14px;
+  }
+
+  .service-card {
+    padding: 15px;
+  }
 }

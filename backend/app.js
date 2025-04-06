@@ -10,7 +10,7 @@ import { setupPassport } from "./config/passport.js";
 import authRoutes from "./routes/authRoutes.js";
 import dataRoutes from "./routes/dataRoutes.js";
 import LNERoutes from "./routes/LNERoutes.js"; 
-
+import AdminRoutes from "./routes/AdminRoutes.js";
 dotenv.config();
 
 const app = express();
@@ -38,17 +38,6 @@ app.use(
 );
 
 app.use(connectFlash());
-
-app.use((req, res, next) => {
-  res.locals.success = req.flash("success");
-  res.locals.error = req.flash("error");
-  res.locals.currUser = req.user;
-  res.locals.admin = process.env.ADMIN_ID;
-  res.locals.admin_username = process.env.ADMIN_USERNAME;
-  res.locals.adminPassword = process.env.ADMIN_PASSWORD;
-  next();
-});
-
 setupPassport(passport);
 app.use(passport.initialize());
 app.use(passport.session());
@@ -56,6 +45,7 @@ app.use(passport.session());
 app.use("/api/auth", authRoutes);
 app.use("/api/data", dataRoutes);
 app.use("/api/LNE", LNERoutes);
+app.use('/api/admin', AdminRoutes);
 
 app.get("/", (req, res) => res.send("Welcome to the API 🚀"));
 

@@ -109,7 +109,7 @@ router.post("/login", (req, res, next) => {
 });
 
 router.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
-router.get("/google/callback", passport.authenticate("google", { failureRedirect: "/" }), async (req, res) => {
+router.get("/google/callback", passport.authenticate("google", { failureRedirect: process.env.FRONTEND_URL }), async (req, res) => {
     try {
       let user = await User.findOne({ email: req.user.email });
       if (user) {
@@ -137,7 +137,7 @@ router.get("/google/callback", passport.authenticate("google", { failureRedirect
       res.redirect(`${process.env.FRONTEND_URL}`);
     } catch (err) {
       console.error("Error in callback route:", err);
-      res.redirect(`${process.env.FRONTEND_URL}/login?error=${err.message}`);
+      res.redirect(`${process.env.FRONTEND_URL}/login`);
     }
   }
 );
@@ -164,16 +164,13 @@ router.post("/forgot-password", async (req, res) => {
   try {
     const { email } = req.body;
     const user = await User.findOne({ email });
-
     if (!user) return res.status(400).json({ message: "User not found" });
     if (!user.password)
       return res
         .status(400)
         .json({ message: "Google-authenticated users cannot reset password" });
-
     const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: "1h" });
     const resetLink = `${FRONTEND_URL}/reset-password/${token}`;
-
     await transporter.sendMail({
       from: `Last Night Engineering <${EMAIL_USER}>`,
       to: email,
@@ -193,14 +190,13 @@ router.post("/forgot-password", async (req, res) => {
         </div>
       `,
     });
-
     res.json({ message: "Reset link sent to your email" });
   } catch (err) {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 });
 
-router.post("/reset-password", validateUser, async (req, res) => {
+router.post("/reset-password", async (req, res) => {
   try {
     const { token, newPassword } = req.body;
     const decoded = jwt.verify(token, JWT_SECRET);

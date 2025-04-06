@@ -1,124 +1,220 @@
-import React, { useEffect, useState } from "react";
-import "../styles/Teaching.css";
+import React, { useState, useEffect } from 'react';
+import { FaEdit, FaTrash, FaYoutube, FaInfoCircle } from 'react-icons/fa';
+import axios from 'axios';
+import TeachingEdit from '../EditForm/TeachingEdit';
+import '../styles/Main.css';
 import SearchBar from './SearchBar';
 
-const Teaching = () => {
-  const [teaching, setTeaching] = useState([]);
-  const [filteredTeaching, setFilteredTeaching] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
+const Teachings = () => {
+  const [teachings, setTeachings] = useState([]);
+  const [editingTeaching, setEditingTeaching] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [user, setUser] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredTeachings, setFilteredTeachings] = useState([]);
+  const [showDescriptions, setShowDescriptions] = useState({});
+  const [isEditing, setIsEditing] = useState(false);
 
-  // Fetch teaching data from the database
   useEffect(() => {
-    const fetchTeaching = async () => {
+    const fetchTeachings = async () => {
       try {
-        const response = await fetch("/api/data/teaching");
-        const data = await response.json();
-        setTeaching(data);
-        setFilteredTeaching(data); // Initialize filtered teaching data with all data
-      } catch (error) {
-        console.error("Error fetching teaching data:", error);
+        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/data/teaching`);
+        setTeachings(res.data);
+        setFilteredTeachings(res.data);
+        const initialStates = {};
+        res.data.forEach((t) => (initialStates[t._id] = false));
+        setShowDescriptions(initialStates);
+      } catch (err) {
+        console.error('Failed to fetch teachings:', err);
       }
     };
 
-    fetchTeaching();
+    const fetchUser = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/auth/user`, {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,
+        });
+        setUser(res.data.user);
+        const adminIds = import.meta.env.VITE_ADMIN_IDS?.split(',') || [];
+        setIsAdmin(!!(res.data.user?.googleId && adminIds.includes(res.data.user.googleId)));
+      } catch (err) {
+        setUser(null);
+        setIsAdmin(false);
+      }
+    };
+
+    fetchTeachings();
+    fetchUser();
   }, []);
 
-  // Handle search
-  const handleSearch = (query) => {
-    setSearchQuery(query);
-    const filtered = teaching.filter((item) => {
-      return (
-        item.title.toLowerCase().includes(query.toLowerCase()) ||
-        item.description.toLowerCase().includes(query.toLowerCase())
-      );
-    });
-    setFilteredTeaching(filtered);
+  const handleDelete = async (id) => {
+    try {
+      const token = localStorage.getItem('token');
+      await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/admin/teaching/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true,
+      });
+      setTeachings((prev) => prev.filter((t) => t._id !== id));
+      setFilteredTeachings((prev) => prev.filter((t) => t._id !== id));
+    } catch (err) {
+      console.error('Failed to delete teaching:', err);
+    }
   };
 
-  // Generate suggestions based on the search query
+  const handleUpdate = async (updatedTeaching) => {
+    try {
+      const token = localStorage.getItem('token');
+      const { data } = await axios.put(
+        `${import.meta.env.VITE_BACKEND_URL}/api/admin/teaching/${updatedTeaching._id}`,
+        updatedTeaching,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,
+        }
+      );
+      setTeachings((prev) => prev.map((t) => (t._id === data._id ? data : t)));
+      setFilteredTeachings((prev) => prev.map((t) => (t._id === data._id ? data : t)));
+      setEditingTeaching(null);
+      setIsEditing(false);
+    } catch (err) {
+      console.error('Failed to update teaching:', err);
+    }
+  };
+
+  const handleEditClick = (teaching) => {
+    setEditingTeaching(teaching);
+    setIsEditing(true);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingTeaching(null);
+    setIsEditing(false);
+  };
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    const filtered = teachings.filter((t) => {
+      return (
+        t.title.toLowerCase().includes(query.toLowerCase()) ||
+        t.description.toLowerCase().includes(query.toLowerCase())
+      );
+    });
+    setFilteredTeachings(filtered);
+  };
+
+  const toggleDescription = (id) => {
+    setShowDescriptions((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
+
   const generateSuggestions = () => {
     if (searchQuery.length === 0) return [];
     const query = searchQuery.toLowerCase();
-
-    const suggestions = teaching
-      .flatMap((item) => {
+    const suggestions = teachings
+      .flatMap((t) => {
         const matches = [];
-
-        // Check title
-        if (item.title.toLowerCase().includes(query)) {
-          matches.push(`${item.title}`);
-        }
-
-        // Check description
-        const descriptionWords = item.description.toLowerCase().split(" ");
-        const matchedDescriptionWord = descriptionWords.find((word) =>
-          word.includes(query)
-        );
-        if (matchedDescriptionWord) {
-          matches.push(`${matchedDescriptionWord}`);
-        }
-
+        if (t.title.toLowerCase().includes(query)) matches.push(t.title);
+        const descWords = t.description.toLowerCase().split(' ');
+        const match = descWords.find((w) => w.includes(query));
+        if (match) matches.push(match);
         return matches;
       })
-      .slice(0, 5); // Limit to 5 suggestions
-
-    return suggestions;
+      .slice(0, 5);
+    return [...new Set(suggestions)];
   };
 
   const suggestions = generateSuggestions();
 
+  const getYouTubeThumbnail = (url) => {
+    const videoIdMatch = url?.match(
+      /(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|v\/))([\w-]{11})/
+    );
+    const videoId = videoIdMatch ? videoIdMatch[1] : null;
+    return videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : null;
+  };
+  
   return (
-    <div className="container mt-4">
-      <SearchBar onSearch={handleSearch} />
+    <div className="section-container">
+      <SearchBar onSearch={handleSearch} suggestions={suggestions} />
 
-      {/* Display search suggestions */}
-      {suggestions.length > 0 && (
-        <div className="suggestions-container">
-          {suggestions.map((suggestion, index) => (
-            <div key={index} className="suggestion-item">
-              {suggestion}
+      <div className="section-grid section-grid-yt">
+        {(searchQuery ? filteredTeachings : teachings).map((t) => (
+          <div key={t._id} className="section-card section-card-yt">
+            <div className="section-admin-actions">
+              {isAdmin && (
+                <>
+                  <button onClick={() => handleEditClick(t)} aria-label="Edit teaching">
+                    <FaEdit className="section-icon section-edit-btn" />
+                  </button>
+                  <button onClick={() => handleDelete(t._id)} aria-label="Delete teaching">
+                    <FaTrash className="section-icon section-del-btn" />
+                  </button>
+                </>
+              )}
+              <button onClick={() => toggleDescription(t._id)} aria-label="Show description">
+                <FaInfoCircle className="section-icon section-info-btn" />
+              </button>
             </div>
-          ))}
-        </div>
-      )}
 
-      <h2 className="text-center mb-4">Teaching</h2>
-      <div className="row">
-        {filteredTeaching.length > 0 ? (
-          filteredTeaching.map((item, index) => (
-            <div key={index} className="col-md-4 mb-4">
-              <div className="card project-card">
-                <img
-                  src={item.imgSrc}
-                  className="card-img-top project-image"
-                  alt={item.title}
+            <div className="section-card-image">
+              {t.youtube ? (
+                <img 
+                  src={getYouTubeThumbnail(t.youtube)} 
+                  alt={`YouTube thumbnail for ${t.title}`} 
+                  loading="lazy" 
                 />
-                <div className="card-body project-details">
-                  <h5 className="card-title">{item.title}</h5>
-                  <p className="card-text">{item.description}</p>
+              ) : (
+                <div className="section-image-placeholder">
+                  <FaYoutube className="section-placeholder-icon" />
+                  <h3>{t.title}</h3>
+                </div>
+              )}
+            </div>
 
-                  {/* Buttons Section */}
-                  <div className="d-flex justify-content-between mt-3">
+            <div className="section-card-overlay">
+              <div className="section-card-details">
+                {!showDescriptions[t._id] ? (
+                  <>
+                    <h3>{t.title}</h3>
+                  </>
+                ) : (
+                  <div className="section-description">
+                    <p>{t.description}</p>
+                  </div>
+                )}
+                <div className="section-card-actions">
+                  {t.youtube && (
                     <a
-                      href={item.resourceUrl}
+                      href={t.youtube}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="btn live-demo-btn"
+                      className="section-action-btn"
                     >
-                      📚 View Resource
+                      <FaYoutube className="section-icon" /> Watch
                     </a>
-                    <button className="btn snapshot-btn">📸 Snapshot</button>
-                  </div>
+                  )}
                 </div>
               </div>
             </div>
-          ))
-        ) : (
-          <p className="text-center">No teaching resources found.</p>
-        )}
+          </div>
+        ))}
       </div>
+
+      {isEditing && editingTeaching && (
+        <div className="section-edit-modal">
+          <TeachingEdit
+            teaching={editingTeaching}
+            onSuccess={handleUpdate}
+            onCancel={handleCancelEdit}
+          />
+        </div>
+      )}
     </div>
   );
 };
 
-export default Teaching;
+export default Teachings;
