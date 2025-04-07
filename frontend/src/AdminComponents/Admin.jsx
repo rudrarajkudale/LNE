@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Routes, Route, Link, useLocation, Navigate } from "react-router-dom";
 import UserData from "./UserData";
 import ContactsData from "./ContactsData";
@@ -11,6 +11,16 @@ import { FaCrown } from "react-icons/fa";
 const Admin = () => {
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('');
+
+  useEffect(() => {
+    const path = location.pathname;
+    if (path.includes('/datausers')) setActiveTab('users');
+    else if (path.includes('/datacontacts')) setActiveTab('contacts');
+    else if (path.includes('/dataprojects')) setActiveTab('projects');
+    else if (path.includes('/datateaching')) setActiveTab('teaching');
+    else if (path.includes('/datanotes')) setActiveTab('notes');
+  }, [location]);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -24,7 +34,7 @@ const Admin = () => {
 
   return (
     <div className="admin-container">
-      {isBasePath && <Navigate to="/admin/users" replace />}
+      {isBasePath && <Navigate to="/admin/datausers" replace />}
       <div className="admin-navbar">
         <div 
           className={`hamburger ${isMenuOpen ? "active" : ""}`} 
@@ -35,44 +45,44 @@ const Admin = () => {
         </div>
         <ul className={`admin-nav ${isMenuOpen ? "active" : ""}`}>
           <li 
-            className={location.pathname.includes("/admin/users") ? "active" : ""}
+            className={activeTab === 'users' ? "active" : ""}
             onClick={closeMenu}
           >
-            <Link to="/admin/users" className="admin-nav-link">Users</Link>
+            <Link to="/admin/datausers" className="admin-nav-link">Users</Link>
           </li>
           <li 
-            className={location.pathname.includes("/admin/contacts") ? "active" : ""}
+            className={activeTab === 'contacts' ? "active" : ""}
             onClick={closeMenu}
           >
-            <Link to="/admin/contacts" className="admin-nav-link">Contacts</Link>
+            <Link to="/admin/datacontacts" className="admin-nav-link">Contacts</Link>
           </li>
           <li 
-            className={location.pathname.includes("/admin/projects") ? "active" : ""}
+            className={activeTab === 'projects' ? "active" : ""}
             onClick={closeMenu}
           >
-            <Link to="/admin/projects" className="admin-nav-link">Projects</Link>
+            <Link to="/admin/dataprojects" className="admin-nav-link">Projects</Link>
           </li>
           <li 
-            className={location.pathname.includes("/admin/teaching") ? "active" : ""}
+            className={activeTab === 'teaching' ? "active" : ""}
             onClick={closeMenu}
           >
-            <Link to="/admin/teaching" className="admin-nav-link">Teaching</Link>
+            <Link to="/admin/datateaching" className="admin-nav-link">Teaching</Link>
           </li>
           <li 
-            className={location.pathname.includes("/admin/notes") ? "active" : ""}
+            className={activeTab === 'notes' ? "active" : ""}
             onClick={closeMenu}
           >
-            <Link to="/admin/notes" className="admin-nav-link">Notes</Link>
+            <Link to="/admin/datanotes" className="admin-nav-link">Notes</Link>
           </li>
         </ul>
       </div>
       <div className="admin-content">
         <Routes>
-          <Route path="/users" element={<UserData />} />
-          <Route path="/contacts" element={<ContactsData />} />
-          <Route path="/teaching" element={<TeachingData />} />
-          <Route path="/notes" element={<NotesData />} />
-          <Route path="/projects" element={<ProjectsData />} />
+          <Route path="/datausers" element={<UserData />} />
+          <Route path="/datacontacts" element={<ContactsData />} />
+          <Route path="/datateaching" element={<TeachingData />} />
+          <Route path="/datanotes" element={<NotesData />} />
+          <Route path="/dataprojects" element={<ProjectsData />} />
         </Routes>
       </div>
     </div>

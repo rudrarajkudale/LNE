@@ -30,6 +30,13 @@ const Teachings = () => {
     };
 
     const fetchUser = async () => {
+      const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+      if (!isLoggedIn) {
+        setUser(null);
+        setIsAdmin(false);
+        return;
+      }
+
       try {
         const token = localStorage.getItem('token');
         const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/auth/user`, {

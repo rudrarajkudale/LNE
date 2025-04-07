@@ -1,3 +1,7 @@
+body, html{
+  min-height: 100vh;
+}
+
 .section-container {
   max-width: 1600px;
   margin: -4rem auto;
@@ -16,7 +20,7 @@
 .section-card {
   position: relative;
   width: 17rem;
-  height: 17rem;
+  min-height: 17rem;
   border-radius: 8px;
   overflow: hidden;
   background-color: transparent;

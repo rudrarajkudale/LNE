@@ -145,6 +145,7 @@ const Register = () => {
   };
 
   const handleGoogleSignUp = () => {
+    localStorage.setItem("isLoggedIn", "true"); 
     window.location.href = `${import.meta.env.VITE_BACKEND_URL}/api/auth/google`;
   };
 

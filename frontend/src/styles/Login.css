@@ -106,6 +106,21 @@ select.form-control option:hover {
   border-color: #ff8c00;
 }
 
+.custom-checkbox {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #ff8c00;
+  border-radius: 2px;
+  position: relative;
+}
+
+.custom-checkbox:checked {
+  background-color: #ff8c00;
+  border-color: #ff8c00;
+  color: white;
+}
+
 @media (max-width: 768px) {
   .loginContainer {
     width: 95%;
@@ -158,6 +173,15 @@ select.form-control option:hover {
   .img-fluid {
     max-width: 80%;
     margin: 0 auto 20px;
+  }
+
+  .custom-checkbox {
+    appearance: none;
+    width: 20px !important;
+    height: 20px !important;
+    border: 2px solid #ff8c00;
+    border-radius: 2px;
+    position: relative;
   }
 }
 

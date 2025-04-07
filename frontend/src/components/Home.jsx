@@ -173,7 +173,7 @@ const Home = () => {
                 >
                   <Card className="info-card h-100 border-0">
                     <Card.Body className="p-4">
-                      <div className="icon mb-3">{info.icon}</div>
+                      <span className="icon mb-5">{info.icon}</span>
                       <Card.Title className="mb-3 fw-bold">{info.title}</Card.Title>
                       <Card.Text className="text-muted">{info.text}</Card.Text>
                     </Card.Body>

@@ -30,6 +30,13 @@ const Projects = () => {
     };
 
     const fetchUser = async () => {
+      const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+      if (!isLoggedIn) {
+        setUser(null);
+        setIsAdmin(false);
+        return;
+      }
+
       try {
         const token = localStorage.getItem('token');
         const userResponse = await axios.get(

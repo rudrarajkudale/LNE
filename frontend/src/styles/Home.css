@@ -14,7 +14,7 @@
   padding: 0;
   overflow-x: hidden;
   position: relative;
-  left: -7.2rem !important;
+  left: -7.2rem;
 }
 
 .text-gradient {
@@ -201,12 +201,9 @@ section {
   height: 45px;
   background: rgba(245, 184, 32, 0.1);
   border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: inline;
   color: var(--primary-color);
-  font-size: 1.3rem;
-  margin-bottom: 0.8rem;
+  font-size: 1.5rem;
 }
 
 .feature-card {
@@ -231,11 +228,9 @@ section {
   padding: 2rem 0;
 }
 
-@media (min-width: 768px) {
-  .home-container{
-    position: fixed;
-    left: 7.2rem !important;
-    overflow: auto;
+@media (max-width: 768px) {
+  .home-container {
+    left: -0.8rem;
   }
 
   section {
@@ -254,11 +249,8 @@ section {
   .hero-text {
     font-size: 1.1rem;
   }
-  .hero-image{
-    margin-top: -5 0 0 !important;
-  }
   .hero-btns{
-    margin-bottom: -5rem;
+    margin: 0 3.4rem -2rem;
   }
   .mission-title {
     font-size: 2.1rem;

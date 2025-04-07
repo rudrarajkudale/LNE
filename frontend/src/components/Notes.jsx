@@ -30,6 +30,13 @@ const Notes = () => {
     };
 
     const fetchUser = async () => {
+      const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+      if (!isLoggedIn) {
+        setUser(null);
+        setIsAdmin(false);
+        return;
+      }
+
       try {
         const token = localStorage.getItem('token');
         const userRes = await axios.get(

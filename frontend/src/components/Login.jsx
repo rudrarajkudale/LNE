@@ -18,7 +18,6 @@ const Login = () => {
         email,
         password,
       });
-      localStorage.setItem("token", data.token);
       const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/auth/login`, {
         method: "POST",
         credentials: "include",
@@ -27,6 +26,7 @@ const Login = () => {
       });
       const result = await response.json();
       if (response.ok) {
+        localStorage.setItem("isLoggedIn", "true"); 
         localStorage.setItem(
           "flashMessage",
           JSON.stringify({ type: "success", message: "🎉 Welcome back to Last Night Engineering!" })
@@ -50,8 +50,8 @@ const Login = () => {
     }
   };
   
-
   const handleGoogleSignIn = () => {
+    localStorage.setItem("isLoggedIn", "true"); 
     localStorage.setItem(
       "flashMessage",
       JSON.stringify({ type: "success", message: "🎉 Welcome back to Last Night Engineering!" })
@@ -59,6 +59,7 @@ const Login = () => {
     setTimeout(() => {
       window.location.href = `${import.meta.env.VITE_BACKEND_URL}/api/auth/google`;
     }, 1000);
+    localStorage.setItem("isLoggedIn", "true"); 
   };
 
   return (

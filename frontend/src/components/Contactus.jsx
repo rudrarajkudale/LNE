@@ -306,7 +306,7 @@ const ContactForm = () => {
                       {designPreferencesOptions.map(option => (
                         <div key={option} className="form-check">
                           <input
-                            className="form-check-input"
+                            className="form-check-input custom-checkbox"
                             type="checkbox"
                             name="designPreferences"
                             value={option}

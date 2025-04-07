@@ -27,7 +27,13 @@ const Navbar = () => {
 
   useEffect(() => {
     const fetchUser = async () => {
-      
+      const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+      if (!isLoggedIn) {
+        setUser(null);
+        setIsAdmin(false);
+        return;
+      }
+    
       try {
         const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/auth/user`, {
           withCredentials: true,
@@ -39,6 +45,7 @@ const Navbar = () => {
         }
       } catch (error) {
         if (error.response?.status === 401) {
+          localStorage.removeItem("isLoggedIn");
           setUser(null);
           setIsAdmin(false);
         } else {
@@ -46,6 +53,7 @@ const Navbar = () => {
         }
       }
     };
+    
     fetchUser();
   }, []);
 
@@ -65,15 +73,20 @@ const Navbar = () => {
         method: "GET",
         credentials: "include",
       });
+  
+      localStorage.removeItem("isLoggedIn");
+      setUser(null);
+      setIsAdmin(false);
+  
       if (response.ok) {
-        setUser(null);
-        setIsAdmin(false);
-        setTimeout(() => {
-          navigate("/");
-          window.location.reload();
-        }, 500);
+        localStorage.setItem(
+          "flashMessage", 
+          JSON.stringify({ type: "success", message: "😊Logged out successfully" })
+        );
+        window.location.reload();
       } else {
-        console.error("Logout failed:", await response.json());
+        const errorData = await response.json();
+        console.error("Logout failed:", errorData);
       }
     } catch (error) {
       console.error("Logout error:", error);
