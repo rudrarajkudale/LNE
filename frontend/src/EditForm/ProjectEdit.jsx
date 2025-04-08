@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import './Form.css';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import '../styles/Tostify.css';
 
 const ProjectEdit = ({ project, onSuccess, onCancel }) => {
   const [formData, setFormData] = useState({
@@ -52,18 +55,27 @@ const ProjectEdit = ({ project, onSuccess, onCancel }) => {
           },
           withCredentials: true
         }
-      );      
-      localStorage.setItem('flashMessage', JSON.stringify({
-        type: 'success',
-        message: '✅ Project updated successfully!'
-      }));   
+      );
+
+      toast.success('🚀 Project updated successfully!', {
+        className: 'toast-custom',
+        icon: false
+      });
+
       onSuccess(response.data);
     } catch (error) {
-      localStorage.setItem('flashMessage', JSON.stringify({
-        type: 'error',
-        message: '❌ Failed to update project'
-      }));
-      window.location.reload();
+      const errorMessage = error.response?.data?.message || 
+        '⚠️ Failed to update project. Please check your inputs and try again.';
+      
+      toast.error(
+        error.response?.status === 401 
+          ? '🔒 Session expired! Please login again to update projects.' 
+          : `❌ ${errorMessage}`, 
+        {
+          className: 'toast-custom-error',
+          icon: false
+        }
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -141,15 +153,21 @@ const ProjectEdit = ({ project, onSuccess, onCancel }) => {
           className="edit-form-save-btn"
           disabled={isSubmitting}
         >
-          {isSubmitting ? 'Saving...' : 'Save Changes'}
+          {isSubmitting ? '💾 Saving...' : '💾 Save Project'}
         </button>
         <button 
           type="button" 
           className="edit-form-cancel-btn"
-          onClick={onCancel}
+          onClick={() => {
+            toast.info('✋ Edit cancelled - Project remains unchanged', {
+              className: 'toast-custom-info',
+              icon: false
+            });
+            onCancel();
+          }}
           disabled={isSubmitting}
         >
-          Cancel
+          ⎋ Cancel
         </button>
       </div>
     </form>

@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Tab, Tabs, Form, Badge } from 'react-bootstrap';
 import axios from 'axios';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const ContactsData = () => {
   const [contacts, setContacts] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredContacts, setFilteredContacts] = useState([]);
   const [activeTab, setActiveTab] = useState('projects');
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchContacts = async () => {
@@ -26,6 +29,12 @@ const ContactsData = () => {
         setFilteredContacts(response.data);
       } catch (error) {
         console.error('Error fetching contacts:', error);
+        toast.error('❌ Failed to load contacts', {
+          className: 'toast-custom-error',
+          icon: false
+        });
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchContacts();
@@ -58,91 +67,129 @@ const ContactsData = () => {
   };
 
   const filterByCategory = (category) => {
-    return (searchQuery ? filteredContacts : contacts).filter(contact => contact.category === category);
+    const filtered = (searchQuery ? filteredContacts : contacts).filter(contact => contact.category === category);
+    return filtered;
   };
 
-  const renderProjectsTable = () => (
-    <Table bordered hover responsive className="admin-table">
-      <thead>
-        <tr>
-          <th>Sub Category</th>
-          <th>Requirements</th>
-          <th>Budget</th>
-          <th>Timeline</th>
-          <th>Audience</th>
-          <th>Design Preferences</th>
-          <th>Technical Specs</th>
-          <th>Contact</th>
-        </tr>
-      </thead>
-      <tbody>
-        {filterByCategory('projects').map(contact => (
-          <tr key={contact._id}>
-            <td>{contact.projects?.subCategory}</td>
-            <td>{contact.projects?.requirements}</td>
-            <td>{contact.projects?.budget}</td>
-            <td>{contact.projects?.timeline}</td>
-            <td>{contact.projects?.audience}</td>
-            <td>
-              {Array.isArray(contact.projects?.designPreferences) 
-                ? contact.projects.designPreferences.map(pref => (
-                    <Badge key={pref} className="tech-badge me-1">{pref}</Badge>
-                  ))
-                : contact.projects?.designPreferences}
-            </td>
-            <td>{contact.projects?.technicalSpecs}</td>
-            <td>{contact.projects?.keyContacts}</td>
-          </tr>
-        ))}
-      </tbody>
-    </Table>
-  );
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+  };
 
-  const renderTeachingTable = () => (
-    <Table bordered hover responsive className="admin-table">
-      <thead>
-        <tr>
-          <th>User Type</th>
-          <th>Learning Topic</th>
-          <th>Message</th>
-          <th>Contact</th>
-        </tr>
-      </thead>
-      <tbody>
-        {filterByCategory('teaching').map(contact => (
-          <tr key={contact._id}>
-            <td>{contact.teaching?.userType}</td>
-            <td>{contact.teaching?.learningTopic}</td>
-            <td>{contact.teaching?.message}</td>
-            <td>{contact.teaching?.contact}</td>
+  const renderProjectsTable = () => {
+    const projects = filterByCategory('projects');
+    return (
+      <Table bordered hover responsive className="admin-table">
+        <thead>
+          <tr>
+            <th>Sub Category</th>
+            <th>Requirements</th>
+            <th>Budget</th>
+            <th>Timeline</th>
+            <th>Audience</th>
+            <th>Design Preferences</th>
+            <th>Technical Specs</th>
+            <th>Contact</th>
           </tr>
-        ))}
-      </tbody>
-    </Table>
-  );
+        </thead>
+        <tbody>
+          {projects.length > 0 ? (
+            projects.map(contact => (
+              <tr key={contact._id}>
+                <td>{contact.projects?.subCategory}</td>
+                <td>{contact.projects?.requirements}</td>
+                <td>{contact.projects?.budget}</td>
+                <td>{contact.projects?.timeline}</td>
+                <td>{contact.projects?.audience}</td>
+                <td>
+                  {Array.isArray(contact.projects?.designPreferences) 
+                    ? contact.projects.designPreferences.map(pref => (
+                        <Badge key={pref} className="tech-badge me-1">{pref}</Badge>
+                      ))
+                    : contact.projects?.designPreferences}
+                </td>
+                <td>{contact.projects?.technicalSpecs}</td>
+                <td>{contact.projects?.keyContacts}</td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="8" className="text-center text-muted py-4">
+                {isLoading ? 'Loading projects...' : 'No project contacts found'}
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </Table>
+    );
+  };
 
-  const renderNotesTable = () => (
-    <Table bordered hover responsive className="admin-table">
-      <thead>
-        <tr>
-          <th>Note Type</th>
-          <th>Subject</th>
-          <th>Requirements</th>
-          <th>Contact</th>
-        </tr>
-      </thead>
-      <tbody>
-        {filterByCategory('notes').map(contact => (
-          <tr key={contact._id}>
-            <td>{contact.notes?.selectedNoteType}</td>
-            <td>{contact.notes?.subject || 'N/A'}</td>
-            <td>{contact.notes?.requirements}</td>
-            <td>{contact.notes?.keyContacts}</td>
+  const renderTeachingTable = () => {
+    const teaching = filterByCategory('teaching');
+    return (
+      <Table bordered hover responsive className="admin-table">
+        <thead>
+          <tr>
+            <th>User Type</th>
+            <th>Learning Topic</th>
+            <th>Message</th>
+            <th>Contact</th>
           </tr>
-        ))}
-      </tbody>
-    </Table>
-  );
+        </thead>
+        <tbody>
+          {teaching.length > 0 ? (
+            teaching.map(contact => (
+              <tr key={contact._id}>
+                <td>{contact.teaching?.userType}</td>
+                <td>{contact.teaching?.learningTopic}</td>
+                <td>{contact.teaching?.message}</td>
+                <td>{contact.teaching?.contact}</td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="4" className="text-center text-muted py-4">
+                {isLoading ? 'Loading teaching inquiries...' : 'No teaching inquiries found'}
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </Table>
+    );
+  };
+
+  const renderNotesTable = () => {
+    const notes = filterByCategory('notes');
+    return (
+      <Table bordered hover responsive className="admin-table">
+        <thead>
+          <tr>
+            <th>Note Type</th>
+            <th>Subject</th>
+            <th>Requirements</th>
+            <th>Contact</th>
+          </tr>
+        </thead>
+        <tbody>
+          {notes.length > 0 ? (
+            notes.map(contact => (
+              <tr key={contact._id}>
+                <td>{contact.notes?.selectedNoteType}</td>
+                <td>{contact.notes?.subject || 'N/A'}</td>
+                <td>{contact.notes?.requirements}</td>
+                <td>{contact.notes?.keyContacts}</td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="4" className="text-center text-muted py-4">
+                {isLoading ? 'Loading note requests...' : 'No note requests found'}
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </Table>
+    );
+  };
 
   return (
     <div className="admin-container">
@@ -158,12 +205,12 @@ const ContactsData = () => {
 
       <Tabs
         activeKey={activeTab}
-        onSelect={(k) => setActiveTab(k)}
+        onSelect={handleTabChange}
         className="mb-3 admin-tabs"
       >
         <Tab 
           eventKey="projects" 
-          title="Projects" 
+          title={`Projects (${filterByCategory('projects').length})`}
           className="admin-tab"
           tabClassName="custom-tab"
           activeTabClassName="active-custom-tab"
@@ -172,7 +219,7 @@ const ContactsData = () => {
         </Tab>
         <Tab 
           eventKey="teaching" 
-          title="Teaching" 
+          title={`Teaching (${filterByCategory('teaching').length})`}
           className="admin-tab"
           tabClassName="custom-tab"
           activeTabClassName="active-custom-tab"
@@ -181,7 +228,7 @@ const ContactsData = () => {
         </Tab>
         <Tab 
           eventKey="notes" 
-          title="Notes" 
+          title={`Notes (${filterByCategory('notes').length})`}
           className="admin-tab"
           tabClassName="custom-tab"
           activeTabClassName="active-custom-tab"

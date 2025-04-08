@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import './Form.css';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import '../styles/Tostify.css';
 
 const NoteEdit = ({ note, onSuccess, onCancel }) => {
   const [formData, setFormData] = useState({
@@ -50,18 +53,22 @@ const NoteEdit = ({ note, onSuccess, onCancel }) => {
         }
       );
       
-      localStorage.setItem('flashMessage', JSON.stringify({
-        type: 'success',
-        message: '✅ Note updated successfully!'
-      }));
+      toast.success('📝 Note updated successfully!', {
+        className: 'toast-custom',
+        icon: false
+      });
       
       onSuccess(response.data);
     } catch (error) {
-      localStorage.setItem('flashMessage', JSON.stringify({
-        type: 'error',
-        message: '❌ Failed to update note'
-      }));
-      window.location.reload();
+      const errorMessage = error.response?.data?.message || 
+                         'Failed to update note';
+      
+      toast.error(errorMessage.includes('expired') ? 
+        '🔒 Session expired! Please login again.' : 
+        `❌ ${errorMessage}`, {
+        className: 'toast-custom-error',
+        icon: false
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -119,15 +126,21 @@ const NoteEdit = ({ note, onSuccess, onCancel }) => {
           className="edit-form-save-btn"
           disabled={isSubmitting}
         >
-          {isSubmitting ? 'Saving...' : 'Save Changes'}
+          {isSubmitting ? '💾 Saving...' : '💾 Save Changes'}
         </button>
         <button 
           type="button" 
           className="edit-form-cancel-btn"
-          onClick={onCancel}
+          onClick={() => {
+            toast.info('👋 Edit cancelled - Note remains unchanged', {
+              className: 'toast-custom-info',
+              icon: false
+            });
+            onCancel();
+          }}
           disabled={isSubmitting}
         >
-          Cancel
+          ⎋ Cancel
         </button>
       </div>
     </form>

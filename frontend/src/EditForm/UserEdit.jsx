@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import PropTypes from 'prop-types';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import '../styles/Tostify.css';
 import './Form.css';
 
 const UserEdit = ({ user, onSuccess, onCancel }) => {
@@ -15,37 +18,57 @@ const UserEdit = ({ user, onSuccess, onCancel }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (fullName.trim() === user.fullName) {
+      toast.info('👋 No changes detected', {
+        className: 'toast-custom-info',
+        icon: false
+      });
+      return;
+    }
+
     setIsSubmitting(true);
-    
+
     try {
       const token = localStorage.getItem('token');
-      
+
       const response = await axios.put(
         `${import.meta.env.VITE_BACKEND_URL}/api/admin/users/${user._id}`,
-        { fullName }, // Only send fullName in the request
+        { fullName },
         {
           headers: {
-            "Authorization": `Bearer ${token}`
+            Authorization: `Bearer ${token}`,
           },
-          withCredentials: true
+          withCredentials: true,
         }
       );
-      
-      localStorage.setItem('flashMessage', JSON.stringify({
-        type: 'success',
-        message: '✅ Username updated successfully!'
-      }));
-      
+
+      toast.success('👤 User updated successfully!', {
+        className: 'toast-custom',
+        icon: false
+      });
+
       onSuccess(response.data);
     } catch (error) {
-      localStorage.setItem('flashMessage', JSON.stringify({
-        type: 'error',
-        message: '❌ Failed to update username'
-      }));
-      window.location.reload();
+      const errorMessage = error.response?.data?.message || 'Failed to update user';
+      
+      toast.error(errorMessage.includes('expired') ? 
+        '🔒 Session expired! Please login again.' : 
+        `❌ ${errorMessage}`, {
+        className: 'toast-custom-error',
+        icon: false
+      });
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleCancel = () => {
+    toast.info('👋 Edit cancelled - User remains unchanged', {
+      className: 'toast-custom-info',
+      icon: false
+    });
+    onCancel();
   };
 
   return (
@@ -60,22 +83,22 @@ const UserEdit = ({ user, onSuccess, onCancel }) => {
           required
         />
       </div>
-      
+
       <div className="edit-form-buttons">
-        <button 
-          type="submit" 
+        <button
+          type="submit"
           className="edit-form-save-btn"
           disabled={isSubmitting}
         >
-          {isSubmitting ? 'Saving...' : 'Save Changes'}
+          {isSubmitting ? '💾 Saving...' : '💾 Save Changes'}
         </button>
-        <button 
-          type="button" 
+        <button
+          type="button"
           className="edit-form-cancel-btn"
-          onClick={onCancel}
+          onClick={handleCancel}
           disabled={isSubmitting}
         >
-          Cancel
+          ⎋ Cancel
         </button>
       </div>
     </form>
@@ -86,7 +109,7 @@ UserEdit.propTypes = {
   user: PropTypes.shape({
     _id: PropTypes.string.isRequired,
     fullName: PropTypes.string.isRequired
-  }).isRequired,
+  }),
   onSuccess: PropTypes.func.isRequired,
   onCancel: PropTypes.func.isRequired
 };

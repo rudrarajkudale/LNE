@@ -206,7 +206,7 @@ body, html {
 
 .project-table th:nth-child(2),
 .project-table td:nth-child(2) {
-  width: 30%;
+  width: 25%;
 }
 
 .project-table th:nth-child(3),
@@ -350,8 +350,7 @@ body, html {
     position: absolute;
     display: flex;
     flex-wrap: nowrap;
-    width: 6rem;
-    gap: 5px;
+    width: 6.8rem;
     top: 9.9rem;
     border: none;
   }

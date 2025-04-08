@@ -4,13 +4,16 @@ import axios from 'axios';
 import NoteEdit from '../EditForm/NoteEdit';
 import '../styles/Main.css';
 import SearchBar from './SearchBar';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import '../styles/Tostify.css';
 
 const Notes = () => {
   const [notes, setNotes] = useState([]);
   const [editingNote, setEditingNote] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [user, setUser] = useState(null);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
   const [filteredNotes, setFilteredNotes] = useState([]);
   const [showDescriptions, setShowDescriptions] = useState({});
   const [isEditing, setIsEditing] = useState(false);
@@ -25,17 +28,16 @@ const Notes = () => {
         res.data.forEach(note => initialShow[note._id] = false);
         setShowDescriptions(initialShow);
       } catch (err) {
-        console.error('Failed to fetch notes:', err);
+        toast.error('❌ Failed to fetch notes', {
+          className: 'toast-custom-error',
+          icon: false
+        });
       }
     };
 
     const fetchUser = async () => {
       const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
-      if (!isLoggedIn) {
-        setUser(null);
-        setIsAdmin(false);
-        return;
-      }
+      if (!isLoggedIn) return;
 
       try {
         const token = localStorage.getItem('token');
@@ -74,9 +76,15 @@ const Notes = () => {
       );
       setNotes(prev => prev.filter(note => note._id !== noteId));
       setFilteredNotes(prev => prev.filter(note => note._id !== noteId));
-      window.location.reload();
+      toast.success('🗑️ Note deleted successfully!', {
+        className: 'toast-custom',
+        icon: false
+      });
     } catch (err) {
-      console.error('Failed to delete note:', err);
+      toast.error('❌ Failed to delete note', {
+        className: 'toast-custom-error',
+        icon: false
+      });
     }
   };
 
@@ -95,12 +103,18 @@ const Notes = () => {
       setFilteredNotes(prev => prev.map(n => n._id === data._id ? data : n));
       setEditingNote(null);
       setIsEditing(false);
-      window.location.reload();
+      toast.success('✅ Note updated successfully!', {
+        className: 'toast-custom',
+        icon: false
+      });
     } catch (err) {
-      console.error('Failed to update note:', err);
+      toast.error('❌ Failed to update note', {
+        className: 'toast-custom-error',
+        icon: false
+      });
     }
   };
-
+  
   const handleEditClick = (note) => {
     setEditingNote(note);
     setIsEditing(true);
@@ -125,7 +139,6 @@ const Notes = () => {
       const subject = note.subject?.toLowerCase() || '';
       const description = note.description?.toLowerCase() || '';
       const queryLower = query.toLowerCase();
-      
       return (
         title.includes(queryLower) ||
         subject.includes(queryLower) ||
@@ -143,15 +156,12 @@ const Notes = () => {
         const matches = [];
         const title = note.title?.toLowerCase() || '';
         const subject = note.subject?.toLowerCase() || '';
-        const description = note.description?.toLowerCase() || '';
-        
+        const description = note.description?.toLowerCase() || '';     
         if (title.includes(query)) matches.push(note.title);
-        if (subject.includes(query)) matches.push(note.subject);
-        
+        if (subject.includes(query)) matches.push(note.subject);     
         const descWords = description.split(" ");
         const matchedWord = descWords.find(word => word.includes(query));
-        if (matchedWord) matches.push(matchedWord);
-        
+        if (matchedWord) matches.push(matchedWord);       
         return matches;
       })
       .slice(0, 5);
@@ -203,15 +213,14 @@ const Notes = () => {
                 {!showDescriptions[note._id] ? (
                   <>
                     <h3>{note.title}</h3>
-                    <div className="section-technologies">
-                      {note.subject}
-                    </div>
+                    <div className="section-technologies">{note.subject}</div>
                   </>
                 ) : (
                   <div className="section-description">
                     <p>{note.description}</p>
                   </div>
                 )}
+
                 <div className="section-card-actions">
                   {note.downloadNotesSrc && (
                     <a
@@ -231,13 +240,11 @@ const Notes = () => {
       </div>
 
       {isEditing && editingNote && (
-        <div className="section-edit-modal">
-          <NoteEdit
-            note={editingNote}
-            onSuccess={handleUpdate}
-            onCancel={handleCancelEdit}
-          />
-        </div>
+        <NoteEdit
+          note={editingNote}
+          onUpdate={handleUpdate}
+          onCancel={handleCancelEdit}
+        />
       )}
     </div>
   );

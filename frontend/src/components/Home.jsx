@@ -1,43 +1,85 @@
 import React, { useRef, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/Home.css";
-import Footer from "./footer";
+import Footer from "./Footer";
 import { 
-  FaSearch, FaBullhorn, FaUsers, FaEllipsisH,  FaBuilding, FaEnvelope,
+  FaSearch, FaBullhorn, FaUsers, FaEllipsisH, FaBuilding, FaEnvelope,
   FaClock, FaUser, FaLightbulb, FaTrophy 
 } from "react-icons/fa";
 import heroImg from "../assets/homeImg.gif";
 import missionImg from "../assets/mission.png";
 import { Container, Row, Col, Card } from "react-bootstrap";
 import { motion } from "framer-motion";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import '../styles/Tostify.css';
+
 
 const services = [
-  { icon: <FaSearch />, title: "Website Development", desc: "Build & maintain professional websites.", color: "bg-warning" },
-  { icon: <FaBullhorn />, title: "Teaching & Training", desc: "Expert guidance for better learning.", color: "bg-success" },
-  { icon: <FaUsers />, title: "Notes & Study Materials", desc: "Well-structured resources for students.", color: "bg-primary" },
-  { icon: <FaEllipsisH />, title: "Tech Support", desc: "Keep your website running smoothly.", color: "bg-danger" }
+  { icon: <FaSearch />, title: "Website Development", desc: "We create beautiful, fast, and mobile-friendly websites for students, creators, and businesses. Share your idea, and we'll build it into a live, working website that gets noticed.", color: "bg-warning" },
+  { icon: <FaBullhorn />, title: "Teaching & Training", desc: "Want to learn real coding? We offer a friendly learning environment to help you confidently grow your tech skills from basic to advanced levels.", color: "bg-success" },
+  { icon: <FaUsers />, title: "Notes & Study Materials", desc: "Struggling with study materials? We've got you covered with clean, concise notes specially designed for engineering students. Learn smart, not hard.", color: "bg-primary" },
+  { icon: <FaEllipsisH />, title: "Tech Support", desc: "Website down? Need quick fixes? We handle all your technical issues — from bugs to backups — so you can focus on your goals rather than glitches.", color: "bg-danger" }
 ];
 
 const missionPoints = [
-  { icon: <FaUsers />, title: "Expert Team", text: "Our skilled team crafts exceptional digital solutions." },
-  { icon: <FaBuilding />, title: "Scaling Startups", text: "Empowering businesses with innovative technology." },
+  { icon: <FaUsers />, title: "Expert Team", text: "Creative minds building smart digital solutions." },
+  { icon: <FaBuilding />, title: "Scaling Startups", text: "Tech-driven growth for modern startups." },
   { icon: <FaEnvelope />, title: "24/7 Support", text: "Dedicated, round-the-clock customer service." }
 ];
 
 const features = [
-  { icon: <FaClock size={24} />, title: "Time Efficient", desc: "On-time project delivery." },
-  { icon: <FaUser size={24} />, title: "User Friendly", desc: "Focused on user experience." },
-  { icon: <FaLightbulb size={24} />, title: "Creative Designs", desc: "Innovative, captivating design solutions." },
-  { icon: <FaTrophy size={24} />, title: "Achievements", desc: "Recognized for outstanding achievements." },
+  { icon: <FaClock size={24} />, title: "Time Efficient", desc: "We value your time — delivering every project with speed, precision, and punctuality." },
+  { icon: <FaUser size={24} />, title: "User Friendly", desc: "Designed with users in mind — intuitive, smooth, and easy-to-navigate experiences." },
+  { icon: <FaLightbulb size={24} />, title: "Creative Designs", desc: "We blend creativity with functionality to craft visually stunning and impactful designs." },
+  { icon: <FaTrophy size={24} />, title: "Achievements", desc: "Recognized for our dedication, innovation, and consistent delivery of excellence." },
 ];
 
 const Home = () => {
   const navigate = useNavigate();
   const servicesRef = useRef(null);
+  
   const handleGetStartedClick = useCallback(() => {
     servicesRef.current?.scrollIntoView({ behavior: "smooth" });
+    toast.success('🚀 Let\'s get started with our services!', {
+      className: 'toast-custom',
+      icon: false
+    });
   }, []);
 
+  const handleLearnMoreClick = useCallback(() => {
+    navigate('/aboutus');
+    toast.info('ℹ️ Learn more about what we do!', {
+      className: 'toast-custom',
+      icon: false
+    });
+  }, [navigate]);
+
+  const handleExploreClick = useCallback(() => {
+    navigate('/projects');
+    toast.success('🔍 Exploring more projects!', {
+      className: 'toast-custom',
+      icon: false
+    });
+  }, [navigate]);
+
+  const handleContactClick = (e) => {
+    if (localStorage.getItem("isLoggedIn") !== "true") {
+      e.preventDefault();
+      toast.error('You must be logged in to access this feature', {
+        className: 'toast-custom-error',
+        icon: false
+      });
+      navigate('/login');
+    }else{
+      navigate('/contactus');
+      toast.success('📩 Let\'s get in touch!', {
+        className: 'toast-custom',
+        icon: false
+      });
+    }
+  };
+  
   return (
     <div className="home-container">
       <section className="hero-section container d-flex flex-column flex-md-row align-items-center justify-content-between py-5">
@@ -47,12 +89,23 @@ const Home = () => {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <h1 className="display-4 fw-bold text-dark mb-4 ">
-            We Are <span className="text-gradient">Creative</span> Design Agency
+          <h1 className="display-4 fw-bold text-dark mb-4">
+            You Dream It. <span className="text-gradient">We Make It.</span>
           </h1>
-          <p className="hero-text text-muted mb-4">
-            At <b>LNE (Last Night Engineering)</b>, we bring late-night hustle to life! From building powerful websites to top-quality web development training, we make learning and innovation accessible to everyone. Join us to code, create, and succeed!
-          </p>
+          <div className="hero-text text-muted mb-4">
+            <p>
+              At <b>LNE (Last Night Engineering)</b>, we transform your ideas into powerful digital solutions — whether it's a custom website, a student project, smart notes, or real-world coding sessions.
+            </p>
+            <p>
+              We help you build, learn, and grow — with clean designs, quality code, and human support that actually makes sense.
+            </p>
+            <p>
+              <b>Let's create something meaningful together.</b>
+            </p>
+            <p>
+              We're not just another agency — we're your creative partner. Whether you're a student looking to upskill or a business aiming to stand out online, we bring passion, precision, and late-night dedication to every project.
+            </p>
+          </div>
           <div className="mt-4 d-flex gap-3 hero-btns">
             <motion.button 
               className="custom-btn primary-btn" 
@@ -64,7 +117,7 @@ const Home = () => {
             </motion.button>
             <motion.button 
               className="custom-btn secondary-btn" 
-              onClick={() => navigate('/about')}
+              onClick={handleLearnMoreClick}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -96,7 +149,7 @@ const Home = () => {
               We Provide The Best <span className="text-gradient">Services</span>
             </h2>
             <p className="section-subtitle text-muted mb-5">
-              Unleash the full potential of your business with our expert digital strategies.
+              We believe great ideas deserve excellent execution. That's why we help you bring those ideas to life — with proper design, solid code, and a team that actually listens.
             </p>
           </motion.div>
           
@@ -114,7 +167,7 @@ const Home = () => {
                   <div className={`icon-box ${service.color} text-white p-3 rounded-circle mb-4 mx-auto`}>
                     {service.icon}
                   </div>
-                  <h5 className="fw-semibold mb-3">{service.title}</h5>
+                  <h5 className="fw-semibold mb-3 text-center">{service.title}</h5>
                   <p className="text-muted mb-0">{service.desc}</p>
                 </motion.div>
               </Col>
@@ -123,7 +176,7 @@ const Home = () => {
 
           <motion.button 
             className="custom-btn primary-btn mt-5" 
-            onClick={() => navigate('/projects')}
+            onClick={handleExploreClick}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
@@ -146,11 +199,16 @@ const Home = () => {
                 <h2 className="mission-title mb-4 text-center">
                   Our <span className="highlight">Mission</span>
                 </h2>
-                <p className="mission-text mb-4">
-                  At <b>LNE (Last Night Engineering)</b>, we empower businesses with innovative digital solutions. Our mission is to transform ideas into reality through technology, ensuring seamless growth and success.
-                </p>
+                <div className="mission-text mb-4">
+                  <p>
+                    At <b>LNE (Last Night Engineering)</b>, our mission is to spark curiosity, fuel innovation, and empower every learner and entrepreneur to turn ideas into impact. We are passionate about blending education and technology to create meaningful digital solutions that inspire growth, learning, and transformation.
+                  </p>
+                  <p>
+                    Whether it's building modern websites, offering expert training, or sharing valuable study resources — we aim to be a trusted force driving digital excellence and accessible education for all.
+                  </p>
+                </div>
                 <p className="mission-text mb-5">
-                  With a focus on quality, creativity, and customer satisfaction, we aim to be a trusted partner for businesses striving in the digital era.
+                  With a focus on quality, creativity, and customer satisfaction, we strive to be a trusted partner for businesses competing in the digital era.
                 </p>
                 <img 
                   src={missionImg} 
@@ -199,7 +257,7 @@ const Home = () => {
               Why Choose <span className="text-gradient">Us</span>
             </h2>
             <p className="section-subtitle text-muted">
-              We combine innovation with expertise to deliver exceptional results
+              We blend innovation, quality, and passion to deliver impactful digital solutions that help you grow with confidence.
             </p>
           </motion.div>
           
@@ -239,7 +297,11 @@ const Home = () => {
             <p className="mb-5 mx-auto" style={{ maxWidth: "600px" }}>
               Let's discuss how we can help your business grow with our tailored digital solutions.
             </p>
-            <Link to="/contactus" className="custom-btn primary-btn">
+            <Link 
+              to={localStorage.getItem("isLoggedIn") === "true" ? "/contactus" : "#"}
+              className="custom-btn primary-btn" 
+              onClick={handleContactClick}
+            >
               Get In Touch
             </Link>
           </motion.div>

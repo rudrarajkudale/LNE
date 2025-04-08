@@ -1,20 +1,30 @@
 import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../styles/Login.css";
-import FlashMsg from "../utils/FlashMsg";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import '../styles/Tostify.css';
 import forgotpassImg from '../assets/forgotpassImg.png';
 import { FaLink } from "react-icons/fa";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
-  const [flashMessage, setFlashMessage] = useState("");
-  const [flashType, setFlashType] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   const handleForgotPassword = async (e) => {
     e.preventDefault();
-    setFlashMessage("");
     setLoading(true);
+
+    if (!isValidEmail(email.trim())) {
+      toast.error('⚠️ Please enter a valid email address', {
+        className: 'toast-custom-error',
+        icon: false
+      });
+      setLoading(false);
+      return;
+    }
 
     try {
       const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/auth/forgot-password`, {
@@ -26,11 +36,15 @@ const ForgotPassword = () => {
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || "Failed to send reset link");
 
-      setFlashMessage("✅ Reset link sent to your email.");
-      setFlashType("success");
+      toast.success('✅ Reset link sent to your email!', {
+        className: 'toast-custom',
+        icon: false
+      });
     } catch (error) {
-      setFlashMessage(error.message || "⚠️ Something went wrong.");
-      setFlashType("error");
+      toast.error(`❌ ${error.message || "Failed to send reset link"}`, {
+        className: 'toast-custom-error',
+        icon: false
+      });
     } finally {
       setLoading(false);
     }
@@ -38,25 +52,23 @@ const ForgotPassword = () => {
 
   return (
     <div className="loginContainer forgetcontainer">
-      <div className="container-fluid ">
+      <div className="container-fluid">
         <div className="row align-items-center justify-content-center">
           <div className="col-md-5 d-none d-md-flex align-items-center justify-content-center">
             <img src={forgotpassImg} alt="Illustration" style={{ maxWidth: "75%" }} />
           </div>
 
           <div className="col-md-6">
-            {flashMessage && <FlashMsg message={flashMessage} type={flashType} />}
-
             <h3 className="fw-bold text-center mb-2">🔑 Forgot Password?</h3>
             <p className="text-muted text-center mb-2">Enter your email to reset your password.</p>
 
             <form onSubmit={handleForgotPassword}>
               <div className="mb-2">
-                <label className="form-label">Email</label>
+                <label htmlFor="emailInput" className="form-label">Email</label>
                 <input
                   type="email"
-                  className="form-control"
-                  style={{ borderColor: "#ff8c00" }}
+                  id="emailInput"
+                  className="form-control orange-border"
                   placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -75,10 +87,6 @@ const ForgotPassword = () => {
                   className="text-orange"
                   onClick={(e) => {
                     e.preventDefault();
-                    localStorage.setItem(
-                      "flashMessage",
-                      JSON.stringify({ type: "success", message: "✅ You can sign in now!" })
-                    );
                     window.location.href = "/login";
                   }}
                 >

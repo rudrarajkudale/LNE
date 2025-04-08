@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import RegisterImg from "../assets/registerImg.png";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import FlashMsg from "../utils/FlashMsg";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import "../styles/Login.css";
+import "../styles/Tostify.css";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -15,8 +17,6 @@ const Register = () => {
   });
 
   const [showPassword, setShowPassword] = useState(false);
-  const [flashMessage, setFlashMessage] = useState("");
-  const [flashType, setFlashType] = useState("");
   const [isOtpSent, setIsOtpSent] = useState(false);
   const [isOtpVerified, setIsOtpVerified] = useState(false);
   const [isOtpButtonDisabled, setIsOtpButtonDisabled] = useState(false);
@@ -28,8 +28,6 @@ const Register = () => {
 
   const sendOtp = async () => {
     if (isOtpButtonDisabled) return;
-
-    setFlashMessage("");
 
     try {
       const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/auth/send-otp`, {
@@ -43,21 +41,26 @@ const Register = () => {
       if (response.ok) {
         setIsOtpSent(true);
         setIsOtpButtonDisabled(true);
-        setFlashMessage("📩 OTP sent to your email. Please check your inbox.");
-        setFlashType("success");
+        toast.success('📩 OTP sent to your email. Please check your inbox.', {
+          className: 'toast-custom',
+          icon: false
+        });
       } else {
-        setFlashMessage(data.message || "❌ Failed to send OTP.");
-        setFlashType("error");
+        toast.error(data.message || '❌ Failed to send OTP.', {
+          className: 'toast-custom-error',
+          icon: false
+        });
       }
     } catch (error) {
-      setFlashMessage("⚠️ Something went wrong. Please try again.");
-      setFlashType("error");
+      toast.error('⚠️ Something went wrong. Please try again.', {
+        className: 'toast-custom-error',
+        icon: false
+      });
     }
   };
 
   const resendOtp = async () => {
     if (isResendOtpButtonDisabled) return;
-    setFlashMessage("");
     try {
       const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/auth/send-otp`, {
         method: "POST",
@@ -69,21 +72,25 @@ const Register = () => {
 
       if (response.ok) {
         setIsResendOtpButtonDisabled(true);
-        setFlashMessage("📩 OTP resent to your email. Please check your inbox.");
-        setFlashType("success");
+        toast.success('📩 OTP resent to your email. Please check your inbox.', {
+          className: 'toast-custom',
+          icon: false
+        });
       } else {
-        setFlashMessage(data.message || "❌ Failed to resend OTP.");
-        setFlashType("error");
+        toast.error(data.message || '❌ Failed to resend OTP.', {
+          className: 'toast-custom-error',
+          icon: false
+        });
       }
     } catch (error) {
-      setFlashMessage("⚠️ Something went wrong. Please try again.");
-      setFlashType("error");
+      toast.error('⚠️ Something went wrong. Please try again.', {
+        className: 'toast-custom-error',
+        icon: false
+      });
     }
   };
 
   const verifyOtp = async () => {
-    setFlashMessage("");
-
     try {
       const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/auth/verify-otp`, {
         method: "POST",
@@ -95,25 +102,32 @@ const Register = () => {
 
       if (response.ok) {
         setIsOtpVerified(true);
-        setFlashMessage("✅ OTP verified successfully! You can now register.");
-        setFlashType("success");
+        toast.success('✅ OTP verified successfully! You can now register.', {
+          className: 'toast-custom',
+          icon: false
+        });
       } else {
-        setFlashMessage(data.message || "❌ Invalid OTP.");
-        setFlashType("error");
+        toast.error(data.message || '❌ Invalid OTP.', {
+          className: 'toast-custom-error',
+          icon: false
+        });
       }
     } catch (error) {
-      setFlashMessage("⚠️ Something went wrong. Please try again.");
-      setFlashType("error");
+      toast.error('⚠️ Something went wrong. Please try again.', {
+        className: 'toast-custom-error',
+        icon: false
+      });
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setFlashMessage("");
 
     if (!isOtpVerified) {
-      setFlashMessage("❗ Please verify your OTP before proceeding.");
-      setFlashType("error");
+      toast.error('❗ Please verify your OTP before proceeding.', {
+        className: 'toast-custom-error',
+        icon: false
+      });
       return;
     }
 
@@ -127,20 +141,24 @@ const Register = () => {
       const data = await response.json();
 
       if (response.ok) {
-        localStorage.setItem(
-          "flashMessage",
-          JSON.stringify({ type: "success", message: "✅ Registration successful! You can Login Now..." })
-        );
+        toast.success('✅ Registration successful! You can Login Now...', {
+          className: 'toast-custom',
+          icon: false
+        });
         setTimeout(() => {
           window.location.href = "/login";
         }, 2000);
       } else {
-        setFlashMessage(data.message || "❌ Registration failed.");
-        setFlashType("error");
+        toast.error(data.message || '❌ Registration failed.', {
+          className: 'toast-custom-error',
+          icon: false
+        });
       }
     } catch (error) {
-      setFlashMessage("⚠️ Something went wrong. Please try again.");
-      setFlashType("error");
+      toast.error('⚠️ Something went wrong. Please try again.', {
+        className: 'toast-custom-error',
+        icon: false
+      });
     }
   };
 
@@ -158,8 +176,6 @@ const Register = () => {
           </div>
 
           <div className="col-md-6">
-            {flashMessage && <FlashMsg message={flashMessage} type={flashType} />}
-
             <h3 className="fw-bold text-center mb-2">😊 Join Us Today!</h3>
             <p className="text-muted text-center mb-2">Become a Member</p>
 
@@ -296,10 +312,6 @@ const Register = () => {
                   className="text-orange"
                   onClick={(e) => {
                     e.preventDefault();
-                    localStorage.setItem(
-                      "flashMessage",
-                      JSON.stringify({ type: "success", message: "✅ You can sign in now!" })
-                    );
                     window.location.href = "/login";
                   }}
                 >

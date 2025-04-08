@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../styles/SearchBar.css";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import '../styles/Tostify.css';
 
 const SearchBar = ({ onSearch, suggestions = [] }) => {
   const navigate = useNavigate();
@@ -20,9 +23,13 @@ const SearchBar = ({ onSearch, suggestions = [] }) => {
       }
 
       try {
+        const token = localStorage.getItem('token');
         const { data } = await axios.get(
           `${import.meta.env.VITE_BACKEND_URL}/api/auth/user`,
-          { withCredentials: true }
+          { 
+            headers: { "Authorization": `Bearer ${token}` },
+            withCredentials: true 
+          }
         );
         setUser(data.user);
         const adminIds = import.meta.env.VITE_ADMIN_IDS?.split(",") || [];
@@ -35,8 +42,6 @@ const SearchBar = ({ onSearch, suggestions = [] }) => {
         if (error.response?.status === 401) {
           setUser(null);
           setIsAdmin(false);
-        } else {
-          console.error("Error fetching user:", error);
         }
       }
     };
@@ -57,13 +62,10 @@ const SearchBar = ({ onSearch, suggestions = [] }) => {
 
   const handleAdminAction = () => {
     if (!user) {
-      localStorage.setItem(
-        "flashMessage",
-        JSON.stringify({ 
-          type: "error", 
-          message: "🔒 Please login to access admin features" 
-        })
-      );
+      toast.error('🔒 Please login to access admin features', {
+        className: 'toast-custom-error',
+        icon: false
+      });
       navigate("/login");
       return;
     }
@@ -72,12 +74,11 @@ const SearchBar = ({ onSearch, suggestions = [] }) => {
 
   const handleWantAction = () => {
     if (!user) {
-      localStorage.setItem(
-        "flashMessage",
-        JSON.stringify({ type: "error", message: "🔒 Please login to access this feature" })
-      );
+      toast.error('🔒 Please login to access this feature', {
+        className: 'toast-custom-error',
+        icon: false
+      });
       navigate("/login");
-      window.location.reload();
       return;
     }
     navigate("/contactus");

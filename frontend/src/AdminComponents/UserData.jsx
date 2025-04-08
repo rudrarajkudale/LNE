@@ -3,6 +3,9 @@ import { Table, Button, Form } from 'react-bootstrap';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import axios from 'axios';
 import UserEdit from '../EditForm/UserEdit';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import '../styles/Tostify.css';
 
 const UsersData = () => {
   const [users, setUsers] = useState([]);
@@ -34,7 +37,10 @@ const UsersData = () => {
       setUsers(response.data);
       setFilteredUsers(response.data);
     } catch (error) {
-      console.error('Error fetching users:', error);
+      toast.error('❌ Failed to fetch users', {
+        className: 'toast-custom-error',
+        icon: false
+      });
     }
   };
 
@@ -52,6 +58,10 @@ const UsersData = () => {
       const adminIds = import.meta.env.VITE_ADMIN_IDS?.split(",") || [];
       setIsAdmin(!!(userResponse.data.user?.googleId && adminIds.includes(userResponse.data.user.googleId)));
     } catch (err) {
+      toast.error('❌ Failed to verify user', {
+        className: 'toast-custom-error',
+        icon: false
+      });
       setCurrentUser(null);
       setIsAdmin(false);
     }
@@ -88,8 +98,15 @@ const UsersData = () => {
       );
       setUsers(prevUsers => prevUsers.filter(user => user._id !== userId));
       setFilteredUsers(prevFiltered => prevFiltered.filter(user => user._id !== userId));
+      toast.success('🗑️ User deleted successfully!', {
+        className: 'toast-custom',
+        icon: false
+      });
     } catch (err) {
-      console.error('Failed to delete user:', err);
+      toast.error('❌ Failed to delete user', {
+        className: 'toast-custom-error',
+        icon: false
+      });
     }
   };
 
@@ -132,35 +149,43 @@ const UsersData = () => {
           </tr>
         </thead>
         <tbody>
-          {(searchQuery ? filteredUsers : users).map(user => (
-            <tr key={user._id}>
-              <td>{user.fullName}</td>
-              <td>{user.email || 'N/A'}</td>
-              <td>{user.reasonToJoin}</td>
-              {isAdmin && (
-                <td>
-                  <div className="action-buttons">
-                    <Button
-                      variant="link"
-                      onClick={() => handleEditClick(user)}
-                      aria-label="Edit user"
-                      className="edit-btn"
-                    >
-                      <FaEdit />
-                    </Button>
-                    <Button
-                      variant="link"
-                      onClick={() => handleDelete(user._id)}
-                      aria-label="Delete user"
-                      className="delete-btn"
-                    >
-                      <FaTrash />
-                    </Button>
-                  </div>
-                </td>
-              )}
+          {(searchQuery ? filteredUsers : users).length > 0 ? (
+            (searchQuery ? filteredUsers : users).map(user => (
+              <tr key={user._id}>
+                <td>{user.fullName}</td>
+                <td>{user.email || 'N/A'}</td>
+                <td>{user.reasonToJoin}</td>
+                {isAdmin && (
+                  <td>
+                    <div className="action-buttons">
+                      <Button
+                        variant="link"
+                        onClick={() => handleEditClick(user)}
+                        aria-label="Edit user"
+                        className="edit-btn"
+                      >
+                        <FaEdit />
+                      </Button>
+                      <Button
+                        variant="link"
+                        onClick={() => handleDelete(user._id)}
+                        aria-label="Delete user"
+                        className="delete-btn"
+                      >
+                        <FaTrash />
+                      </Button>
+                    </div>
+                  </td>
+                )}
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="4" className="text-center text-muted py-4">
+                {'No user found'}
+              </td>
             </tr>
-          ))}
+          )}
         </tbody>
       </Table>
       

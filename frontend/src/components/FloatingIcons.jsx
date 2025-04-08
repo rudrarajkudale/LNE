@@ -2,6 +2,9 @@ import React, { useRef, useEffect, useState } from "react";
 import { FaWhatsapp, FaPhoneAlt, FaRobot } from "react-icons/fa";
 import "../styles/FloatingIcons.css";
 import ChatBot from "./Chatbot";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import '../styles/Tostify.css';
 
 const FloatingIcons = () => {
   const whatsappLink = import.meta.env.VITE_WhatsappGroup_Link;
@@ -30,14 +33,10 @@ const FloatingIcons = () => {
   const handlePhoneClick = (e) => {
     e.preventDefault();
     navigator.clipboard.writeText(phoneNumber);
-    localStorage.setItem(
-      "flashMessage",
-      JSON.stringify({ 
-        type: "success", 
-        message: "✅ Phone number copied to clipboard!" 
-      })
-    );
-    window.location.reload(); 
+    toast.success('✅ Phone number copied to clipboard!', {
+      className: 'toast-custom',
+      icon: false
+    });
   };
 
   const toggleChatbot = () => {
@@ -45,12 +44,6 @@ const FloatingIcons = () => {
   };
 
   useEffect(() => {
-    const flashMessage = localStorage.getItem("flashMessage");
-    if (flashMessage) {
-      const parsedMessage = JSON.parse(flashMessage);
-      localStorage.removeItem("flashMessage");
-    }
-
     const handleClickOutside = (event) => {
       if (showChatbot && 
           chatbotRef.current && 
@@ -98,16 +91,14 @@ const FloatingIcons = () => {
       </div>
 
       {showChatbot && (
-        <div ref={chatbotRef} className="chatbot-modal">
-          <ChatBot 
-            messages={messages}
-            setMessages={setMessages}
-            input={input}
-            setInput={setInput}
-            supportQuestions={supportQuestions}
-            setSupportQuestions={setSupportQuestions}
-          />
-        </div>
+        <ChatBot 
+          messages={messages}
+          setMessages={setMessages}
+          input={input}
+          setInput={setInput}
+          supportQuestions={supportQuestions}
+          setSupportQuestions={setSupportQuestions}
+        />
       )}
     </>
   );

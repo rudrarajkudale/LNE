@@ -4,7 +4,7 @@ body, html{
 
 .section-container {
   max-width: 1600px;
-  margin: -4rem auto;
+  margin: -3.5rem auto;
   padding: 20px;
 }
 
@@ -223,8 +223,7 @@ body, html{
 
 .section-card-yt{
   width: 100%;
-  aspect-ratio: 16 / 9;
-  height: 13.7rem;
+  height: 30px !important;
 }
 
 .section-grid-yt{

@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../styles/Navbar.css";
 import Logo from "../assets/Logo.png";
-import FlashMsg from "../utils/FlashMsg";
 import { FaBars, FaKey, FaSignOutAlt, FaCrown } from "react-icons/fa";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import '../styles/Tostify.css';
 
 const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [user, setUser] = useState(null);
-  const [flashMessage, setFlashMessage] = useState(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -35,7 +36,9 @@ const Navbar = () => {
       }
     
       try {
+        const token = localStorage.getItem('token');
         const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/auth/user`, {
+          headers: { "Authorization": `Bearer ${token}` },
           withCredentials: true,
         });
         setUser(data.user);
@@ -46,10 +49,9 @@ const Navbar = () => {
       } catch (error) {
         if (error.response?.status === 401) {
           localStorage.removeItem("isLoggedIn");
+          localStorage.removeItem("token");
           setUser(null);
           setIsAdmin(false);
-        } else {
-          console.error("Error fetching user:", error);
         }
       }
     };
@@ -57,43 +59,42 @@ const Navbar = () => {
     fetchUser();
   }, []);
 
-  useEffect(() => {
-    const storedMessage = localStorage.getItem("flashMessage");
-    if (storedMessage) {
-      const { type, message } = JSON.parse(storedMessage);
-      setFlashMessage({ type, message });
-      localStorage.removeItem("flashMessage");
-      setTimeout(() => setFlashMessage(null), 3000);
-    }
-  }, []);
-
   const handleLogout = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/auth/logout`, {
-        method: "GET",
-        credentials: "include",
+      const token = localStorage.getItem('token');
+      await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/auth/logout`, {
+        headers: { "Authorization": `Bearer ${token}` },
+        withCredentials: true,
       });
   
       localStorage.removeItem("isLoggedIn");
+      localStorage.removeItem("token");
       setUser(null);
       setIsAdmin(false);
-  
-      if (response.ok) {
-        localStorage.setItem(
-          "flashMessage", 
-          JSON.stringify({ type: "success", message: "😊Logged out successfully" })
-        );
-        window.location.reload();
-      } else {
-        const errorData = await response.json();
-        console.error("Logout failed:", errorData);
-      }
+      
+      toast.success('😊 Logged out successfully!', {
+        className: 'toast-custom',
+        icon: false
+      });
+      
+      navigate('/');
     } catch (error) {
-      console.error("Logout error:", error);
+      toast.error('❌ Failed to logout', {
+        className: 'toast-custom-error',
+        icon: false
+      });
     }
   };
 
   const handleChangePassword = () => {
+    if (!user) {
+      toast.error('🔒 Please login to change password', {
+        className: 'toast-custom-error',
+        icon: false
+      });
+      navigate("/login");
+      return;
+    }
     navigate("/forgot-password");
   };
 
@@ -103,10 +104,11 @@ const Navbar = () => {
 
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-black px-3">
+      <ToastContainer position="top-center" autoClose={2000}/>
       <div className="container-fluid">
-        <a className="navbar-brand text-white fw-bold" href="/">
+        <Link className="navbar-brand text-white fw-bold" to="/">
           <img src={Logo} alt="Logo" width="100" />
-        </a>
+        </Link>
 
         <span 
           className="navbar-toggler" 
@@ -120,31 +122,31 @@ const Navbar = () => {
         <div className={`collapse navbar-collapse ${mobileMenuOpen ? 'show' : ''}`} id="navbarNav">
           <ul className="navbar-nav me-auto">
             <li className="nav-item">
-              <a 
+              <Link 
                 className={`nav-link text-white ${activeTab === 'projects' ? 'active' : ''}`} 
-                href="/projects"
+                to="/projects"
                 onClick={() => setActiveTab('projects')}
               >
                 💡 Projects
-              </a>
+              </Link>
             </li>
             <li className="nav-item">
-              <a 
+              <Link 
                 className={`nav-link text-white ${activeTab === 'teaching' ? 'active' : ''}`} 
-                href="/teaching"
+                to="/teaching"
                 onClick={() => setActiveTab('teaching')}
               >
                 🧑‍🏫 Teaching
-              </a>
+              </Link>
             </li>
             <li className="nav-item">
-              <a 
+              <Link 
                 className={`nav-link text-white ${activeTab === 'notes' ? 'active' : ''}`} 
-                href="/notes"
+                to="/notes"
                 onClick={() => setActiveTab('notes')}
               >
                 📂 Notes
-              </a>
+              </Link>
             </li>
           </ul>
 
@@ -154,13 +156,13 @@ const Navbar = () => {
                 {isAdmin && (
                   <ul className="navbar-nav me-auto admin-btn">
                     <li className="nav-item">
-                      <a 
+                      <Link 
                         className={`nav-link text-white ${activeTab === 'admin' ? 'active' : ''}`} 
-                        href="/admin"
+                        to="/admin"
                         onClick={() => setActiveTab('admin')}
                       >
                         <FaCrown className="me-1" /> Admin
-                      </a>
+                      </Link>
                     </li>
                   </ul>
                 )}
@@ -223,19 +225,11 @@ const Navbar = () => {
                 </div>
               </>
             ) : (
-              <a href="/login" className="login">Login</a>
+              <Link to="/login" className="login">Login</Link>
             )}
           </div>
         </div>
       </div>
-
-      {flashMessage && (
-        <FlashMsg 
-          message={flashMessage.message} 
-          type={flashMessage.type} 
-          onClose={() => setFlashMessage(null)} 
-        />
-      )}
     </nav>
   );
 };

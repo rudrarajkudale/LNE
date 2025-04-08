@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Modal, Form, Row, Col, Badge } from 'react-bootstrap';
+import { Table, Button, Form } from 'react-bootstrap';
 import { FaEdit, FaTrash, FaExternalLinkAlt } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import TeachingEdit from '../EditForm/TeachingEdit';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import '../styles/Tostify.css';
 
 const TeachingData = () => {
   const [teachings, setTeachings] = useState([]);
@@ -24,11 +27,14 @@ const TeachingData = () => {
 
   const fetchTeachings = async () => {
     try {
-      const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/data/teaching`);
-      setTeachings(res.data);
-      setFilteredTeachings(res.data);
-    } catch (err) {
-      console.error('Failed to fetch teachings:', err);
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/data/teaching`);
+      setTeachings(response.data);
+      setFilteredTeachings(response.data);
+    } catch (error) {
+      toast.error('❌ Failed to fetch teachings', {
+        className: 'toast-custom-error',
+        icon: false
+      });
     }
   };
 
@@ -46,7 +52,10 @@ const TeachingData = () => {
       const adminIds = import.meta.env.VITE_ADMIN_IDS?.split(",") || [];
       setIsAdmin(!!(userResponse.data.user?.googleId && adminIds.includes(userResponse.data.user.googleId)));
     } catch (err) {
-      setUser(null);
+      toast.error('❌ Failed to verify user', {
+        className: 'toast-custom-error',
+        icon: false
+      });
       setIsAdmin(false);
     }
   };
@@ -65,12 +74,12 @@ const TeachingData = () => {
       setFilteredTeachings(filtered);
     }
   };
-  
+
   const handleDelete = async (teachingId) => {
     try {
       const token = localStorage.getItem('token');
       await axios.delete(
-        `${import.meta.env.VITE_BACKEND_URL}/api/admin/teachings/${teachingId}`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/admin/teaching/${teachingId}`,
         {
           headers: { 
             "Content-Type": "application/json",
@@ -81,29 +90,22 @@ const TeachingData = () => {
       );
       setTeachings(prevTeachings => prevTeachings.filter(teaching => teaching._id !== teachingId));
       setFilteredTeachings(prevFiltered => prevFiltered.filter(teaching => teaching._id !== teachingId));
+      toast.success('🗑️ Teaching deleted successfully!', {
+        className: 'toast-custom',
+        icon: false
+      });
     } catch (err) {
-      console.error('Failed to delete teaching:', err);
+      toast.error('❌ Failed to delete teaching', {
+        className: 'toast-custom-error',
+        icon: false
+      });
     }
   };
 
-  const handleUpdate = async (updatedTeaching) => {
-    try {
-      const token = localStorage.getItem('token');
-      const { data } = await axios.put(
-        `${import.meta.env.VITE_BACKEND_URL}/api/admin/teachings/${updatedTeaching._id}`,
-        updatedTeaching,
-        {
-          headers: { "Authorization": `Bearer ${token}` },
-          withCredentials: true
-        }
-      );
-      setTeachings(prev => prev.map(t => t._id === data._id ? data : t));
-      setFilteredTeachings(prev => prev.map(t => t._id === data._id ? data : t));
-      setEditingTeaching(null);
-      setIsEditing(false);
-    } catch (err) {
-      console.error('Failed to update teaching:', err);
-    }
+  const handleUpdateSuccess = () => {
+    setEditingTeaching(null);
+    setIsEditing(false);
+    fetchTeachings(); 
   };
 
   const handleEditClick = (teaching) => {
@@ -143,53 +145,62 @@ const TeachingData = () => {
           </tr>
         </thead>
         <tbody>
-          {(searchQuery ? filteredTeachings : teachings).map(teaching => (
-            <tr key={teaching._id}>
-              <td>{teaching.title}</td>
-              <td>{teaching.description}</td>
-              <td>
-                <a
-                  href={teaching.youtube}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="link-with-icon"
-                >
-                  <FaExternalLinkAlt /> Watch on YouTube
-                </a>
-              </td>
-              {isAdmin && (
+          {(searchQuery ? filteredTeachings : teachings).length > 0 ? (
+            (searchQuery ? filteredTeachings : teachings).map(teaching => (
+              <tr key={teaching._id}>
+                <td>{teaching.title}</td>
+                <td>{teaching.description}</td>
                 <td>
-                  <div className="action-buttons">
-                    <Button
-                      variant="link"
-                      onClick={() => handleEditClick(teaching)}
-                      aria-label="Edit teaching"
-                      className="edit-btn"
+                  {teaching.youtube && (
+                    <a
+                      href={teaching.youtube}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="link-with-icon"
                     >
-                      <FaEdit />
-                    </Button>
-                    <Button
-                      variant="link"
-                      onClick={() => handleDelete(teaching._id)}
-                      aria-label="Delete teaching"
-                      className="delete-btn"
-                    >
-                      <FaTrash />
-                    </Button>
-                  </div>
+                      <FaExternalLinkAlt /> Watch on YouTube
+                    </a>
+                  )}
                 </td>
-              )}
+                {isAdmin && (
+                  <td>
+                    <div className="action-buttons">
+                      <Button
+                        variant="link"
+                        onClick={() => handleEditClick(teaching)}
+                        aria-label="Edit teaching"
+                        className="edit-btn"
+                      >
+                        <FaEdit />
+                      </Button>
+                      <Button
+                        variant="link"
+                        onClick={() => handleDelete(teaching._id)}
+                        aria-label="Delete teaching"
+                        className="delete-btn"
+                      >
+                        <FaTrash />
+                      </Button>
+                    </div>
+                  </td>
+                )}
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="4" className="text-center text-muted py-4">
+                {'No teaching content found'}
+              </td>
             </tr>
-          ))}
+          )}
         </tbody>
       </Table>
       
       {isEditing && editingTeaching && (
         <TeachingEdit
           teaching={editingTeaching}
-          onUpdate={handleUpdate}
+          onSuccess={handleUpdateSuccess}
           onCancel={handleCancelEdit}
-          show={isEditing}
         />
       )}
     </div>

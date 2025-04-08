@@ -4,6 +4,9 @@ import axios from 'axios';
 import ProjectEdit from '../EditForm/ProjectEdit';
 import '../styles/Main.css';
 import SearchBar from './SearchBar';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import '../styles/Tostify.css';
 
 const Projects = () => {
   const [projects, setProjects] = useState([]);
@@ -25,7 +28,10 @@ const Projects = () => {
         projectsResponse.data.forEach(project => initialShowState[project._id] = false);
         setShowDescriptions(initialShowState);
       } catch (err) {
-        console.error('Failed to fetch projects:', err);
+        toast.error('❌ Failed to fetch projects', {
+          className: 'toast-custom-error',
+          icon: false
+        });
       }
     };
 
@@ -74,9 +80,15 @@ const Projects = () => {
       );
       setProjects(prevProjects => prevProjects.filter(project => project._id !== projectId));
       setFilteredProjects(prevFiltered => prevFiltered.filter(project => project._id !== projectId));
-      window.location.reload();
+      toast.success('🗑️ Project deleted successfully!', {
+        className: 'toast-custom',
+        icon: false
+      });
     } catch (err) {
-      console.error('Failed to delete project:', err);
+      toast.error('❌ Failed to delete project', {
+        className: 'toast-custom-error',
+        icon: false
+      });
     }
   };
 
@@ -95,9 +107,8 @@ const Projects = () => {
       setFilteredProjects(prev => prev.map(p => p._id === data._id ? data : p));
       setEditingProject(null);
       setIsEditing(false);
-      window.location.reload();
     } catch (err) {
-      console.error('Failed to update project:', err);
+      next(err);
     }
   };
 
@@ -134,15 +145,17 @@ const Projects = () => {
     if (searchQuery.length === 0) return [];
     const query = searchQuery.toLowerCase();
     const suggestions = projects
-      .flatMap((project) => {
-        const matches = [];
-        if (project.title.toLowerCase().includes(query)) matches.push(`${project.title}`);
-        if (project.technologies.toLowerCase().includes(query)) matches.push(`${project.technologies}`);
+    .flatMap((project) => {
+      const matches = [];
+        if (project.title.toLowerCase().includes(query)) matches.push(`${project.title}`);      
+        const techWords = project.technologies.toLowerCase().split(" ");
+        const matchedTechWord = techWords.find((word) => word.includes(query));
+        if (matchedTechWord) matches.push(`${matchedTechWord}`);      
         const descriptionWords = project.description.toLowerCase().split(" ");
         const matchedDescriptionWord = descriptionWords.find((word) => word.includes(query));
-        if (matchedDescriptionWord) matches.push(`${matchedDescriptionWord}`);
+        if (matchedDescriptionWord) matches.push(`${matchedDescriptionWord}`);      
         return matches;
-      })
+      })    
       .slice(0, 5);
     return [...new Set(suggestions)];
   };

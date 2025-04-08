@@ -3,12 +3,13 @@ import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../styles/CreatePost.css";
 import axios from "axios";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import '../styles/Tostify.css';
 
 const CreatePost = () => {
   const navigate = useNavigate();
   const [category, setCategory] = useState("");
-  const [showMessage, setShowMessage] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [projectDetails, setProjectDetails] = useState({
     title: "",
@@ -48,13 +49,16 @@ const CreatePost = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-
+  
     if (!category) {
-      setErrorMessage("Please select a category.");
+      toast.error('⚠️ Please select a category before submitting.', {
+        className: 'toast-custom-error',
+        icon: false
+      });
       setIsSubmitting(false);
       return;
     }
-
+  
     try {
       let payload;
       switch (category) {
@@ -87,35 +91,44 @@ const CreatePost = () => {
           setIsSubmitting(false);
           return;
       }
-
-      const response = await axios.post(`/api/data/${category}`, payload);
-
+  
+      const token = localStorage.getItem('token');
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/data/${category}`,
+        payload,
+        {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          },
+          withCredentials: true
+        }
+      );
+  
       if (response.status === 201) {
-        setShowMessage(true);
-        setErrorMessage("");
+        toast.success(`🎉 ${category === "projects" ? "Project" : 
+                     category === "teaching" ? "Teaching resource" : 
+                     "Notes"} created successfully!`, {
+          className: 'toast-custom',
+          icon: false
+        });
         setTimeout(() => {
           navigate(`/${category}`);
         }, 1500);
       }
     } catch (error) {
-      console.error("Error creating post:", error);
-      setErrorMessage(error.response?.data?.error || "Failed to create post. Please try again.");
+      toast.error(`❌ ${error.response?.data?.error || "Failed to create post. Please try again later."}`, {
+        className: 'toast-custom-error',
+        icon: false
+      });
     } finally {
       setIsSubmitting(false);
     }
   };
-
+  
   return (
     <div className="create-form-container">
       <form onSubmit={handleSubmit} className="create-form">
-        {showMessage && (
-          <div className="alert alert-success text-center">Successfully Created!</div>
-        )}
-
-        {errorMessage && (
-          <div className="alert alert-danger text-center">{errorMessage}</div>
-        )}
-
         <div className="create-form-group">
           <label>Category:</label>
           <select
@@ -295,7 +308,7 @@ const CreatePost = () => {
             className="create-form-save-btn"
             disabled={isSubmitting}
           >
-            {isSubmitting ? 'Creating...' : 'Create Post'}
+            {isSubmitting ? 'Creating...' : '📤 Create Post'}
           </button>
         </div>
       </form>

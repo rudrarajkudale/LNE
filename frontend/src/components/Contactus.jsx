@@ -2,6 +2,9 @@ import { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../styles/Login.css";
 import ContactImg from "../assets/contact.png";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import "../styles/Tostify.css";
 
 const ContactForm = () => {
   const [category, setCategory] = useState("");
@@ -123,6 +126,10 @@ const ContactForm = () => {
     setErrors(validationErrors);
 
     if (Object.keys(validationErrors).length > 0) {
+      toast.error('❌ Please enter correct data in the form before submitting.', {
+        className: 'toast-custom-error',
+        icon: false
+      });
       return;
     }
 
@@ -145,7 +152,11 @@ const ContactForm = () => {
         throw new Error(errorData.message || "Failed to submit form");
       }
 
-      alert("Form submitted successfully!");
+      toast.success('📬 Thank you! Your message has been sent successfully. We\'ll get back to you soon!', {
+        className: 'toast-custom',
+        icon: false
+      });
+
       setCategory("");
       setFormData({
         projects: {
@@ -177,8 +188,10 @@ const ContactForm = () => {
         }
       });
     } catch (error) {
-      console.error("Error submitting form:", error);
-      alert(error.message || "An error occurred while submitting the form.");
+      toast.error(`❌ ${error.message || "An error occurred while submitting the form."}`, {
+        className: 'toast-custom-error',
+        icon: false
+      });
     } finally {
       setIsSubmitting(false);
     }

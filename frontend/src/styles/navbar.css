@@ -157,6 +157,10 @@
 }
 
 @media (max-width: 991.98px) {
+  .navbar{
+    margin-top: -1rem;
+    max-height: 5.9rem;
+  }
   .navbar-collapse {
     position: fixed;
     top: 77px;

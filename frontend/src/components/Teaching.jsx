@@ -4,6 +4,9 @@ import axios from 'axios';
 import TeachingEdit from '../EditForm/TeachingEdit';
 import '../styles/Main.css';
 import SearchBar from './SearchBar';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import '../styles/Tostify.css';
 
 const Teachings = () => {
   const [teachings, setTeachings] = useState([]);
@@ -21,31 +24,33 @@ const Teachings = () => {
         const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/data/teaching`);
         setTeachings(res.data);
         setFilteredTeachings(res.data);
-        const initialStates = {};
-        res.data.forEach((t) => (initialStates[t._id] = false));
-        setShowDescriptions(initialStates);
+        const initialState = {};
+        res.data.forEach(t => initialState[t._id] = false);
+        setShowDescriptions(initialState);
       } catch (err) {
-        console.error('Failed to fetch teachings:', err);
+        toast.error('❌ Failed to fetch teachings', {
+          className: 'toast-custom-error',
+          icon: false
+        });
       }
     };
 
     const fetchUser = async () => {
       const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
-      if (!isLoggedIn) {
-        setUser(null);
-        setIsAdmin(false);
-        return;
-      }
+      if (!isLoggedIn) return;
 
       try {
         const token = localStorage.getItem('token');
-        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/auth/user`, {
-          headers: { Authorization: `Bearer ${token}` },
-          withCredentials: true,
-        });
-        setUser(res.data.user);
-        const adminIds = import.meta.env.VITE_ADMIN_IDS?.split(',') || [];
-        setIsAdmin(!!(res.data.user?.googleId && adminIds.includes(res.data.user.googleId)));
+        const userRes = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/api/auth/user`,
+          {
+            headers: { "Authorization": `Bearer ${token}` },
+            withCredentials: true
+          }
+        );
+        setUser(userRes.data.user);
+        const adminIds = import.meta.env.VITE_ADMIN_IDS?.split(",") || [];
+        setIsAdmin(!!(userRes.data.user?.googleId && adminIds.includes(userRes.data.user.googleId)));
       } catch (err) {
         setUser(null);
         setIsAdmin(false);
@@ -59,14 +64,27 @@ const Teachings = () => {
   const handleDelete = async (id) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/admin/teaching/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-        withCredentials: true,
+      await axios.delete(
+        `${import.meta.env.VITE_BACKEND_URL}/api/admin/teaching/${id}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          withCredentials: true
+        }
+      );
+      setTeachings(prev => prev.filter(t => t._id !== id));
+      setFilteredTeachings(prev => prev.filter(t => t._id !== id));
+      toast.success('🗑️ Teaching video deleted successfully!', {
+        className: 'toast-custom',
+        icon: false
       });
-      setTeachings((prev) => prev.filter((t) => t._id !== id));
-      setFilteredTeachings((prev) => prev.filter((t) => t._id !== id));
     } catch (err) {
-      console.error('Failed to delete teaching:', err);
+      toast.error('❌ Failed to delete teaching video', {
+        className: 'toast-custom-error',
+        icon: false
+      });
     }
   };
 
@@ -77,16 +95,23 @@ const Teachings = () => {
         `${import.meta.env.VITE_BACKEND_URL}/api/admin/teaching/${updatedTeaching._id}`,
         updatedTeaching,
         {
-          headers: { Authorization: `Bearer ${token}` },
-          withCredentials: true,
+          headers: { "Authorization": `Bearer ${token}` },
+          withCredentials: true
         }
       );
-      setTeachings((prev) => prev.map((t) => (t._id === data._id ? data : t)));
-      setFilteredTeachings((prev) => prev.map((t) => (t._id === data._id ? data : t)));
+      setTeachings(prev => prev.map(t => t._id === data._id ? data : t));
+      setFilteredTeachings(prev => prev.map(t => t._id === data._id ? data : t));
       setEditingTeaching(null);
       setIsEditing(false);
+      toast.success('✅ Teaching video updated successfully!', {
+        className: 'toast-custom',
+        icon: false
+      });
     } catch (err) {
-      console.error('Failed to update teaching:', err);
+      toast.error('❌ Failed to update teaching video', {
+        className: 'toast-custom-error',
+        icon: false
+      });
     }
   };
 
@@ -100,22 +125,27 @@ const Teachings = () => {
     setIsEditing(false);
   };
 
+  const toggleDescription = (id) => {
+    setShowDescriptions(prev => ({
+      ...prev,
+      [id]: !prev[id]
+    }));
+  };
+
   const handleSearch = (query) => {
     setSearchQuery(query);
-    const filtered = teachings.filter((t) => {
+    const filtered = teachings.filter(t => {
+      const title = t.title?.toLowerCase() || '';
+      const subject = t.subject?.toLowerCase() || '';
+      const description = t.description?.toLowerCase() || '';
+      const queryLower = query.toLowerCase();
       return (
-        t.title.toLowerCase().includes(query.toLowerCase()) ||
-        t.description.toLowerCase().includes(query.toLowerCase())
+        title.includes(queryLower) ||
+        subject.includes(queryLower) ||
+        description.includes(queryLower)
       );
     });
     setFilteredTeachings(filtered);
-  };
-
-  const toggleDescription = (id) => {
-    setShowDescriptions((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
   };
 
   const generateSuggestions = () => {
@@ -124,10 +154,14 @@ const Teachings = () => {
     const suggestions = teachings
       .flatMap((t) => {
         const matches = [];
-        if (t.title.toLowerCase().includes(query)) matches.push(t.title);
-        const descWords = t.description.toLowerCase().split(' ');
-        const match = descWords.find((w) => w.includes(query));
-        if (match) matches.push(match);
+        const title = t.title?.toLowerCase() || '';
+        const subject = t.subject?.toLowerCase() || '';
+        const description = t.description?.toLowerCase() || '';
+        if (title.includes(query)) matches.push(t.title);
+        if (subject.includes(query)) matches.push(t.subject);
+        const descWords = description.split(" ");
+        const matchedWord = descWords.find(word => word.includes(query));
+        if (matchedWord) matches.push(matchedWord);
         return matches;
       })
       .slice(0, 5);
@@ -143,14 +177,14 @@ const Teachings = () => {
     const videoId = videoIdMatch ? videoIdMatch[1] : null;
     return videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : null;
   };
-  
+
   return (
     <div className="section-container">
       <SearchBar onSearch={handleSearch} suggestions={suggestions} />
 
       <div className="section-grid section-grid-yt">
         {(searchQuery ? filteredTeachings : teachings).map((t) => (
-          <div key={t._id} className="section-card section-card-yt">
+          <div key={t._id} className="section-card-yt section-card">
             <div className="section-admin-actions">
               {isAdmin && (
                 <>
@@ -169,10 +203,10 @@ const Teachings = () => {
 
             <div className="section-card-image">
               {t.youtube ? (
-                <img 
-                  src={getYouTubeThumbnail(t.youtube)} 
-                  alt={`YouTube thumbnail for ${t.title}`} 
-                  loading="lazy" 
+                <img
+                  src={getYouTubeThumbnail(t.youtube)}
+                  alt={`YouTube thumbnail for ${t.title}`}
+                  loading="lazy"
                 />
               ) : (
                 <div className="section-image-placeholder">
@@ -187,24 +221,24 @@ const Teachings = () => {
                 {!showDescriptions[t._id] ? (
                   <>
                     <h3>{t.title}</h3>
+                    <div className="section-card-actions">
+                      {t.youtube && (
+                        <a
+                          href={t.youtube}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="section-action-btn"
+                        >
+                          <FaYoutube className="section-icon" /> Watch
+                        </a>
+                      )}
+                    </div>
                   </>
                 ) : (
                   <div className="section-description">
                     <p>{t.description}</p>
                   </div>
                 )}
-                <div className="section-card-actions">
-                  {t.youtube && (
-                    <a
-                      href={t.youtube}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="section-action-btn"
-                    >
-                      <FaYoutube className="section-icon" /> Watch
-                    </a>
-                  )}
-                </div>
               </div>
             </div>
           </div>

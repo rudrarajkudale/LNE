@@ -1,16 +1,16 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
-import FlashMsg from "../utils/FlashMsg";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import "../styles/Login.css";
+import "../styles/Tostify.css";
 
 const ResetPassword = () => {
   const { token } = useParams();
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [flashMessage, setFlashMessage] = useState("");
-  const [flashType, setFlashType] = useState("");
 
   const handleResetPassword = async (e) => {
     e.preventDefault();
@@ -25,18 +25,24 @@ const ResetPassword = () => {
       const data = await response.json();
 
       if (response.ok) {
-        setFlashMessage("✅ Password reset successfully! You can now login.");
-        setFlashType("success");
+        toast.success('✅ Password reset successfully! You can now login.', {
+          className: 'toast-custom',
+          icon: false
+        });
         setTimeout(() => {
           window.location.href = "/login";
         }, 2000);
       } else {
-        setFlashMessage(data.message || "❌ Failed to reset password.");
-        setFlashType("error");
+        toast.error(data.message || '❌ Failed to reset password.', {
+          className: 'toast-custom-error',
+          icon: false
+        });
       }
     } catch (error) {
-      setFlashMessage("⚠️ Something went wrong. Please try again.");
-      setFlashType("error");
+      toast.error('⚠️ Something went wrong. Please try again.', {
+        className: 'toast-custom-error',
+        icon: false
+      });
     }
   };
 
@@ -53,8 +59,6 @@ const ResetPassword = () => {
           </div>
 
           <div className="col-md-6">
-            {flashMessage && <FlashMsg message={flashMessage} type={flashType} />}
-
             <h3 className="fw-bold text-center mb-2">🔒 Reset Your Password</h3>
             <p className="text-muted text-center mb-2">Enter a new strong password</p>
 
@@ -95,10 +99,6 @@ const ResetPassword = () => {
                   className="text-orange"
                   onClick={(e) => {
                     e.preventDefault();
-                    localStorage.setItem(
-                      "flashMessage",
-                      JSON.stringify({ type: "success", message: "✅ You can Login now!" })
-                    );
                     window.location.href = "/login";
                   }}
                 >

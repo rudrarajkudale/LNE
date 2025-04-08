@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import PropTypes from 'prop-types';
+import './Form.css';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import '../styles/Tostify.css';
 
 const TeachingEdit = ({ teaching, onSuccess, onCancel }) => {
   const [formData, setFormData] = useState({
@@ -47,18 +51,22 @@ const TeachingEdit = ({ teaching, onSuccess, onCancel }) => {
         }
       );
       
-      localStorage.setItem('flashMessage', JSON.stringify({
-        type: 'success',
-        message: '✅ Teaching video updated successfully!'
-      }));
+      toast.success('🎬 Teaching video updated successfully!', {
+        className: 'toast-custom',
+        icon: false
+      });
       
       onSuccess(response.data);
     } catch (error) {
-      localStorage.setItem('flashMessage', JSON.stringify({
-        type: 'error',
-        message: '❌ Failed to update teaching video'
-      }));
-      window.location.reload();
+      const errorMessage = error.response?.data?.message || 
+                         'Failed to update teaching video';
+      
+      toast.error(errorMessage.includes('expired') ? 
+        '🔒 Session expired! Please login again.' : 
+        `❌ ${errorMessage}`, {
+        className: 'toast-custom-error',
+        icon: false
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -96,7 +104,6 @@ const TeachingEdit = ({ teaching, onSuccess, onCancel }) => {
           value={formData.youtube}
           onChange={handleChange}
           required
-          placeholder="https://www.youtube.com/watch?v=..."
         />
       </div>
       
@@ -106,15 +113,21 @@ const TeachingEdit = ({ teaching, onSuccess, onCancel }) => {
           className="edit-form-save-btn"
           disabled={isSubmitting}
         >
-          {isSubmitting ? 'Saving...' : 'Save Changes'}
+          {isSubmitting ? '💾 Saving...' : '💾 Save Video'}
         </button>
         <button 
           type="button" 
           className="edit-form-cancel-btn"
-          onClick={onCancel}
+          onClick={() => {
+            toast.info('👋 Edit cancelled - Video remains unchanged', {
+              className: 'toast-custom-info',
+              icon: false
+            });
+            onCancel();
+          }}
           disabled={isSubmitting}
         >
-          Cancel
+          ⎋ Cancel
         </button>
       </div>
     </form>

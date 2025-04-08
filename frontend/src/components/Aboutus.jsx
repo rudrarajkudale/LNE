@@ -4,34 +4,65 @@ import "../styles/Aboutus.css";
 import { Container, Row, Col, Card, Button } from "react-bootstrap";
 import aboutImg from "../assets/aboutusImg.png";
 import aboutImg1 from "../assets/aboutusImg1.png";
-import Footer from './footer'
+import Footer from './Footer';
 import { FaLaptopCode, FaCode, FaShoppingCart, FaClock, FaUsers, FaHeadset } from "react-icons/fa";
 import FloatingIcons from "./FloatingIcons";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const AboutUs = () => {
-  const navigate=useNavigate()
+  const navigate = useNavigate();
+
+  const handleContactClick = (e) => {
+    if (localStorage.getItem("isLoggedIn") !== "true") {
+      e.preventDefault();
+      toast.error('You must be logged in to access this feature', {
+        className: 'toast-custom-error',
+        icon: false
+      });
+      navigate('/login');
+    }else{
+      navigate('/contactus');
+      toast.success('📩 Let\'s get in touch!', {
+        className: 'toast-custom',
+        icon: false
+      });
+    }
+  };
+
+  const handleProjectsClick = () => {
+    toast.success('✅ You can explore Projects...', {
+      className: 'toast-custom-info',
+      icon: false,
+      autoClose: 2000
+    });
+    setTimeout(() => navigate("/projects"), 0);
+  };
+
   return (
     <div className="about-container">
-      <div style={{height: '100vh', width: '100%'}} className="d-flex align-items-center">
-        <Container className="business-banner py-5" style={{width: '100%'}}>
+      <div style={{ height: '100vh', width: '100%' }} className="d-flex align-items-center">
+        <Container className="business-banner py-5" style={{ width: '100%' }}>
           <Row className="align-items-center">
             <Col md={6} className="text-section">
               <h1 className="title">About <span className="text-warning">LNE</span></h1>
               <br />
               <p className="description">
-                Founded in 2020, LNE began as a passion project in a small home office. Today, we've grown into a 
-                full-fledged digital solutions agency serving clients across 5 countries. Our journey from freelancing 
-                to a trusted development partner reflects our commitment to excellence and innovation in every project we undertake.
+                Welcome to our agency – a hub of innovation, creativity, and excellence. We are a passionate team of developers,
+                designers, and digital experts committed to delivering top-notch solutions that empower businesses to grow in the digital age.
               </p>
               <p className="description">
-                We specialize in creating high-performance web applications that not only meet but exceed client expectations. 
-                Our team of 15+ skilled developers, designers, and strategists work collaboratively to deliver solutions that 
-                drive real business results and digital transformation.
+                At the heart of our work lies a deep belief in transparency, collaboration, and continuous learning.
+                We don't just build projects – we build long-term partnerships based on trust and results.
               </p>
-              <Button 
-                variant="warning" 
+              <p className="description">
+                <b> Let's grow together. 🚀</b>
+              </p>
+
+              <Button
+                variant="warning"
                 className="mt-3 project-btn"
-                onClick={() => navigate("/contact")}
+                onClick={handleContactClick}
               >
                 Get In Touch
               </Button>
@@ -45,15 +76,12 @@ const AboutUs = () => {
         </Container>
       </div>
 
-      {/* Second Page - Services with aligned icons */}
       <Container className="text-center my-5 py-5">
         <h2 className="fw-bold">Save time managing your business with our services</h2>
         <p className="text-muted">
-          In today's fast-paced digital world, efficiency is key. Our comprehensive suite of services is designed to 
-          streamline your operations, enhance your online presence, and ultimately save you valuable time and resources. 
-          Let us handle the technical details while you focus on growing your business.
+          We make tech simple — so you save time, boost your presence, and focus on what matters most: growing your business.
         </p>
-        
+
         <Row className="mt-4 g-4">
           <Col md={4}>
             <Card className="service-card web-design h-100">
@@ -63,16 +91,16 @@ const AboutUs = () => {
                   <Card.Title className="mb-0">Web Design</Card.Title>
                 </div>
                 <Card.Text>
-                  Our web design services combine aesthetic appeal with functional excellence. We create responsive, 
-                  intuitive interfaces that captivate visitors and drive engagement. From minimalist portfolios to 
-                  complex e-commerce platforms, our designs are tailored to reflect your brand identity while 
-                  optimizing user experience and conversion rates.
+                  We design beautiful and easy-to-use websites. Whether it's a personal blog,
+                  business site, or online shop – we make sure your website looks great on all
+                  devices and is simple for visitors to use. Our goal is to help your brand stand
+                  out and attract more people.
                 </Card.Text>
               </Card.Body>
             </Card>
           </Col>
-          
-          <Col md={4}>
+
+          <Col md={4} onMouseEnter={() => handleServiceHover("Development")}>
             <Card className="service-card development h-100">
               <Card.Body className="d-flex flex-column">
                 <div className="d-flex align-items-center mb-3">
@@ -80,16 +108,16 @@ const AboutUs = () => {
                   <Card.Title className="mb-0">Development</Card.Title>
                 </div>
                 <Card.Text>
-                  Leveraging cutting-edge technologies like React, Node.js, and Python, we build robust, scalable 
-                  applications that grow with your business. Our development process emphasizes clean code, 
-                  security best practices, and performance optimization. Whether you need a custom CRM, SaaS platform, 
-                  or mobile-responsive web app, we've got you covered.
+                  We build websites that are fast, secure, and easy to manage.
+                  From simple static sites to full-featured dynamic websites,
+                  we use modern technologies to bring your ideas to life. No apps
+                  – just websites that work smoothly and help your business grow online.
                 </Card.Text>
               </Card.Body>
             </Card>
           </Col>
-          
-          <Col md={4}>
+
+          <Col md={4} onMouseEnter={() => handleServiceHover("Teaching & Notes")}>
             <Card className="service-card ecommerce h-100">
               <Card.Body className="d-flex flex-column">
                 <div className="d-flex align-items-center mb-3">
@@ -97,10 +125,10 @@ const AboutUs = () => {
                   <Card.Title className="mb-0">Teaching & Notes</Card.Title>
                 </div>
                 <Card.Text>
-                  Education is at the heart of what we do. Our comprehensive teaching resources and meticulously 
-                  crafted notes help students and professionals master web technologies. Covering everything from 
-                  HTML basics to advanced JavaScript frameworks, our materials are perfect for self-paced learning 
-                  or classroom instruction.
+                  We teach full MERN stack – MongoDB, Express.js, React, and Node.js –
+                  with simple and easy-to-follow notes. Whether you're a beginner or want
+                  to level up, our notes cover everything from basics to advanced concepts.
+                  Perfect for self-study or classroom learning.
                 </Card.Text>
               </Card.Body>
             </Card>
@@ -108,15 +136,14 @@ const AboutUs = () => {
         </Row>
       </Container>
 
-      {/* Third Page - Why Us with image border and aligned icons */}
       <Container className="about-us-section my-5 py-5">
         <Row className="align-items-center">
           <Col md={6}>
-            <img 
-              src={aboutImg1} 
-              alt="About Us" 
-              className="img-fluid about-img" 
-              style={{border: "5px solid #f5b820"}} 
+            <img
+              src={aboutImg1}
+              alt="About Us"
+              className="img-fluid about-img"
+              style={{ border: "5px solid #f5b820" }}
             />
           </Col>
           <Col md={6}>
@@ -124,9 +151,9 @@ const AboutUs = () => {
               <strong>Why Choose Us?</strong>
             </h2>
             <p className="mb-4">
-              With countless agencies and freelancers available, what makes LNE stand out? Our unique combination of 
-              technical expertise, creative vision, and unwavering commitment to client success sets us apart in the 
-              competitive digital landscape.
+              We don't just build websites – we build your brand's digital identity.
+              What makes us different is our strong dedication, technical skills, and
+              genuine focus on client satisfaction.
             </p>
             <div className="about-details mb-4">
               <div className="d-flex align-items-center">
@@ -134,8 +161,8 @@ const AboutUs = () => {
                 <h3 className="mb-0">Timely Delivery</h3>
               </div>
               <p className="mt-2 ms-5">
-                We understand that time is money. Our project management methodology ensures we deliver quality work 
-                on schedule, every time. Over 95% of our projects are completed by the agreed deadline without 
+                We understand that time is money. Our project management methodology ensures we deliver quality work
+                on schedule, every time. Over 95% of our projects are completed by the agreed deadline without
                 compromising on quality.
               </p>
             </div>
@@ -145,8 +172,8 @@ const AboutUs = () => {
                 <h3 className="mb-0">Client-Centric Approach</h3>
               </div>
               <p className="mt-2 ms-5">
-                Your success is our success. We take time to understand your business objectives, target audience, 
-                and competitive landscape. This deep understanding allows us to create solutions that truly move 
+                Your success is our success. We take time to understand your business objectives, target audience,
+                and competitive landscape. This deep understanding allows us to create solutions that truly move
                 the needle for your organization.
               </p>
             </div>
@@ -156,9 +183,9 @@ const AboutUs = () => {
                 <h3 className="mb-0">24/7 Support</h3>
               </div>
               <p className="mt-2 ms-5">
-                Technical issues don't keep business hours, and neither do we. Our support team is available 
-                around the clock to address any concerns or questions you may have. From minor tweaks to urgent 
-                troubleshooting, we're here when you need us.
+                Technical issues can happen anytime – and we're always here for you.
+                Whether it's a small issue or an urgent one, our team is ready to support
+                you anytime, day or night.
               </p>
             </div>
           </Col>
@@ -171,25 +198,19 @@ const AboutUs = () => {
           <Col md={8} className="text-center">
             <h2 className="section-title mb-4">Explore Our Projects</h2>
             <p className="section-text mb-4">
-              Our portfolio showcases the breadth and depth of our capabilities. From sleek corporate websites to 
-              complex web applications, each project represents our dedication to quality, innovation, and client 
-              satisfaction. We've helped startups establish their digital presence and enterprises transform their 
-              operations through custom solutions.
+              Discover the work that <strong>defines us</strong>.
+              Each project we build is more than just code it's a carefully crafted <strong>solution</strong> backed by <strong>creativity</strong>, <strong>strategy</strong>, and <strong>purpose</strong>.
+              As <strong>MERN stack specialists</strong>, we develop full-stack web applications that are <strong>fast</strong>, <strong>scalable</strong>, and tailored to <strong>real-world needs</strong>.
+
+              From sleek <strong>portfolios</strong> and <strong>business tools</strong> to dynamic <strong>learning platforms</strong>, our work reflects <strong>clean design</strong>, <strong>robust functionality</strong>, and a <strong>user-first approach</strong>.
+
+              We don't just develop websites <em><strong>we bring ideas to life</strong></em>.
+              Take a closer look at our projects and see the <strong>impact</strong> we create.
             </p>
-            <p className="section-text mb-4">
-              Recent highlights include an e-learning platform with 50,000+ active users, a healthcare portal 
-              serving 200+ clinics nationwide, and a custom inventory management system that reduced operational 
-              costs by 30% for our client. Every project presents unique challenges that we embrace as opportunities 
-              to push boundaries and deliver exceptional value.
-            </p>
-            <p className="section-text mb-5">
-              We invite you to explore our work and imagine what we could create together. Whether you have detailed 
-              specifications or just a rough idea, our team can help refine your vision and bring it to life with 
-              technical precision and creative flair.
-            </p>
+
             <Button
               className="project-btn"
-              onClick={() => navigate("/projects")}
+              onClick={handleProjectsClick}
             >
               View All Projects
             </Button>
@@ -197,8 +218,8 @@ const AboutUs = () => {
         </Row>
       </Container>
 
-      <FloatingIcons/>
-      <Footer/>
+      <FloatingIcons />
+      <Footer />
     </div>
   );
 };

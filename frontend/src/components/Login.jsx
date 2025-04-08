@@ -4,6 +4,9 @@ import "../styles/Login.css";
 import LoginImg from "../assets/loginIn.png";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import axios from "axios";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import '../styles/Tostify.css';
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -12,7 +15,6 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    localStorage.removeItem("flashMessage");
     try {
       const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/login`, {
         email,
@@ -27,39 +29,36 @@ const Login = () => {
       const result = await response.json();
       if (response.ok) {
         localStorage.setItem("isLoggedIn", "true"); 
-        localStorage.setItem(
-          "flashMessage",
-          JSON.stringify({ type: "success", message: "🎉 Welcome back to Last Night Engineering!" })
-        );
+        toast.success('🎉 Welcome back to Last Night Engineering!', {
+          className: 'toast-custom',
+          icon: false
+        });
         setTimeout(() => {
           window.location.href = `${import.meta.env.VITE_FRONTEND_URL}`;
         }, 1000);
       } else {
-        localStorage.setItem(
-          "flashMessage",
-          JSON.stringify({ type: "error", message: `❌ ${result.message || "Invalid email or password. Please try again."}` })
-        );
-        window.location.reload();
+        toast.error("❌Invalid email or password. Please try again.", {
+          className: 'toast-custom-error',
+          icon: false
+        });
       }
     } catch (error) {
-      localStorage.setItem(
-        "flashMessage",
-        JSON.stringify({ type: "error", message: "⚠️ Something went wrong. Please try again later." })
-      );
-      window.location.reload();
+      toast.error("❌Invalid email or password. Please try again.", {
+        className: 'toast-custom-error',
+        icon: false
+      });
     }
   };
   
   const handleGoogleSignIn = () => {
     localStorage.setItem("isLoggedIn", "true"); 
-    localStorage.setItem(
-      "flashMessage",
-      JSON.stringify({ type: "success", message: "🎉 Welcome back to Last Night Engineering!" })
-    );
+    toast.success('🎉 Welcome back to Last Night Engineering!', {
+      className: 'toast-custom',
+      icon: false
+    });
     setTimeout(() => {
       window.location.href = `${import.meta.env.VITE_BACKEND_URL}/api/auth/google`;
     }, 1000);
-    localStorage.setItem("isLoggedIn", "true"); 
   };
 
   return (
@@ -136,14 +135,6 @@ const Login = () => {
                 <a
                   href="/register"
                   className="text-orange"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    localStorage.setItem(
-                      "flashMessage",
-                      JSON.stringify({ type: "success", message: "✅ You can sign up now!" })
-                    );
-                    window.location.href = "/register";
-                  }}
                 >
                   Sign up
                 </a>
