@@ -110,8 +110,7 @@ router.post("/contacts", isLoggedIn, validateContact, async (req, res) => {
       html: emailContent,
     });
     res.status(200).json({ message: "Message sent successfully" });
-  } catch (err) {
-    console.error("Error:", err);   
+  } catch (err) { 
     if (err.name === 'ValidationError') {
       const errors = {};
       Object.keys(err.errors).forEach(key => {

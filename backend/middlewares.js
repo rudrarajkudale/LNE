@@ -11,7 +11,6 @@ import User from "./models/User.js";
 export const validateContact = (req, res, next) => {
   const { error } = contactValidationSchema.validate(req.body, { abortEarly: false });
   if (error) {
-    console.log("yappa", error);
     return res.status(400).json({
       success: false,
       errors: error.details.map((err) => err.message),
@@ -22,8 +21,7 @@ export const validateContact = (req, res, next) => {
 
 export const validateNote = (req, res, next) => {
   const { error } = noteValidationSchema.validate(req.body, { abortEarly: false });
-  if (error) {
-    
+  if (error) {  
     return res.status(400).json({
       success: false,
       errors: error.details.map((err) => err.message),
@@ -35,7 +33,6 @@ export const validateNote = (req, res, next) => {
 export const validateProject = (req, res, next) => {
   const { error } = projectValidationSchema.validate(req.body, { abortEarly: false });
   if (error) {
-    console.log(error)
     return res.status(400).json({
       success: false,
       errors: error.details.map((err) => err.message),
@@ -86,7 +83,6 @@ export const isLoggedIn = async (req, res, next) => {
 
 export const isAdmin = (req, res, next) => {
   const adminGoogleIds = process.env.ADMIN_GOOGLE_IDS.split(',');
-  console.log(adminGoogleIds);
   if (!req.user?.googleId) {
     return res.status(401).json({ 
       success: false, 

@@ -65,7 +65,6 @@ router.post("/:category",
         data: newData 
       });
     } catch (error) {
-      console.log(error);
       res.status(500).json({ 
         error: "Failed to create post", 
         details: error.message 
