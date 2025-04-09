@@ -4,7 +4,7 @@ import "../styles/Aboutus.css";
 import { Container, Row, Col, Card, Button } from "react-bootstrap";
 import aboutImg from "../assets/aboutusImg.png";
 import aboutImg1 from "../assets/aboutusImg1.png";
-import Footer from './Fottertemp';
+import Footer from './Footer';
 import { FaLaptopCode, FaCode, FaShoppingCart, FaClock, FaUsers, FaHeadset } from "react-icons/fa";
 import FloatingIcons from "./FloatingIcons";
 import { toast } from 'react-toastify';

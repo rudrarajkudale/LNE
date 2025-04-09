@@ -1,7 +1,7 @@
 import React, { useRef, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/Home.css";
-import Footer from "./Fottertemp";
+import Footer from "./Footer";
 import { 
   FaSearch, FaBullhorn, FaUsers, FaEllipsisH, FaBuilding, FaEnvelope,
   FaClock, FaUser, FaLightbulb, FaTrophy 

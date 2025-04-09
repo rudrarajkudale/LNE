@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import {  toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-import Navbar from "./components/NavTemp";
+import Navbar from "./components/Navbar";
 import Projects from "./components/Projects";
 import Teaching from "./components/Teaching";
 import Notes from "./components/Notes";
