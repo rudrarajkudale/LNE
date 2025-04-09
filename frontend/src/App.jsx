@@ -22,23 +22,6 @@ import Admin from "./AdminComponents/Admin";
 import FloatingIcons from "./components/FloatingIcons";
 import './styles/Tostify.css';
 
-function RedirectIfLoggedIn({ children }) {
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
-    if (isLoggedIn) {
-      toast.info('🎉 You are already logged in!', {
-            className: 'toast-custom',
-            icon: false
-          });
-      navigate("/");
-    }
-  }, [navigate]);
-
-  return children;
-}
-
 function App() {
   return (
     <>
@@ -51,23 +34,8 @@ function App() {
             <Route path="/teaching" element={<Teaching />} />
             <Route path="/notes" element={<Notes />} />
 
-            <Route
-              path="/login"
-              element={
-                <RedirectIfLoggedIn>
-                  <Login />
-                </RedirectIfLoggedIn>
-              }
-            />
-            <Route
-              path="/register"
-              element={
-                <RedirectIfLoggedIn>
-                  <Register />
-                </RedirectIfLoggedIn>
-              }
-            />
-
+            <Route path="/login" element={<Login />}/>
+            <Route path="/register" element={<Register />}/>
             <Route path="/contactus" element={<Contactus />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password/:token" element={<ResetPassword />} />
