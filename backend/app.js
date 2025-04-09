@@ -24,14 +24,14 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:3000",
+    origin: process.env.FRONTEND_URL,
     credentials: true,
   })
 );
 
 app.use(
   session({
-    secret: process.env.SESSION_SECRET || "yoursecretkey",
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     store: MongoStore.create({
@@ -39,9 +39,10 @@ app.use(
       ttl: 7 * 24 * 60 * 60,
     }),
     cookie: {
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      maxAge: 7 * 24 * 60 * 60 * 1000, 
       httpOnly: true,
       sameSite: "lax",
+      secure: process.env.NODE_ENV === "production", 
     },
   })
 );
@@ -57,8 +58,7 @@ app.use("/api/LNE", LNERoutes);
 app.use("/api/admin", AdminRoutes);
 
 app.get("/", (req, res) => {
-  const frontendUrl = process.env.FRONTEND_URL;
-  res.redirect(frontendUrl);
+  res.status(200).send("LNE Backend is running");
 });
 
 app.all("*", (req, res) => {
@@ -72,4 +72,3 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
-
