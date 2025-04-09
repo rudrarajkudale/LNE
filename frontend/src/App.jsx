@@ -2,10 +2,10 @@ import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-route
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import { useEffect } from "react";
-import { ToastContainer, toast } from "react-toastify";
+import {  toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-import Navbar from "./components/Navbar";
+// import Navbar from "./components/Navbar";
 import Projects from "./components/Projects";
 import Teaching from "./components/Teaching";
 import Notes from "./components/Notes";
@@ -43,7 +43,7 @@ function App() {
   return (
     <>
       <Router>
-        <Navbar />
+        {/* <Navbar /> */}
         <div className="container mt-5">
           <Routes>
             <Route path="/" element={<Home />} />
