@@ -5,34 +5,43 @@ import session from "express-session";
 import passport from "passport";
 import cookieParser from "cookie-parser";
 import connectFlash from "connect-flash";
+import MongoStore from "connect-mongo";
+
 import connectDB from "./config/db.js";
 import { setupPassport } from "./config/passport.js";
 import authRoutes from "./routes/authRoutes.js";
 import dataRoutes from "./routes/dataRoutes.js";
-import LNERoutes from "./routes/LNERoutes.js"; 
+import LNERoutes from "./routes/LNERoutes.js";
 import AdminRoutes from "./routes/AdminRoutes.js";
-dotenv.config();
 
+dotenv.config();
 const app = express();
+
 connectDB();
 
 app.use(express.json());
 app.use(cookieParser());
+
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,
+    origin: process.env.FRONTEND_URL || "http://localhost:3000",
     credentials: true,
   })
 );
 
 app.use(
   session({
-    secret: process.env.SESSION_SECRET,
+    secret: process.env.SESSION_SECRET || "yoursecretkey",
     resave: false,
     saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGO_URI,
+      ttl: 7 * 24 * 60 * 60,
+    }),
     cookie: {
-      maxAge: 7 * 24 * 60 * 60 * 1000, 
+      maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true,
+      sameSite: "lax",
     },
   })
 );
@@ -45,7 +54,7 @@ app.use(passport.session());
 app.use("/api/auth", authRoutes);
 app.use("/api/data", dataRoutes);
 app.use("/api/LNE", LNERoutes);
-app.use('/api/admin', AdminRoutes);
+app.use("/api/admin", AdminRoutes);
 
 app.get("/", (req, res) => {
   const frontendUrl = process.env.FRONTEND_URL;
@@ -63,3 +72,4 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+
