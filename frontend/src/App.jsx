@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import {  toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-import Navbar from "./components/Navbar";
+// import Navbar from "./components/Navbar";
 import Projects from "./components/Projects";
 import Teaching from "./components/Teaching";
 import Notes from "./components/Notes";
@@ -43,7 +43,7 @@ function App() {
   return (
     <>
       <Router>
-        <Navbar />
+        {/* <Navbar /> */}
         <div className="container mt-5">
           <Routes>
             <Route path="/" element={<Home />} />
