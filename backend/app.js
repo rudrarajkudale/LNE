@@ -47,7 +47,10 @@ app.use("/api/data", dataRoutes);
 app.use("/api/LNE", LNERoutes);
 app.use('/api/admin', AdminRoutes);
 
-app.get("/", (req, res) => res.send("Welcome to the API 🚀"));
+app.get("/", (req, res) => {
+  const frontendUrl = process.env.FRONTEND_URL;
+  res.redirect(frontendUrl);
+});
 
 app.all("*", (req, res) => {
   res.status(404).json({ error: "Page not found" });
