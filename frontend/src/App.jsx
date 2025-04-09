@@ -5,19 +5,19 @@ import { useEffect } from "react";
 import {  toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-// import Navbar from "./components/Navbar";
+import Navbar from "./components/Navbar";
 import Projects from "./components/Projects";
 import Teaching from "./components/Teaching";
 import Notes from "./components/Notes";
 import Login from "./components/Login";
 import Home from "./components/Home";
 import Register from "./components/Register";
-import ForgotPassword from "./components/Forgetpassword";
+import ForgotPassword from "./components/ForgetPassword";
 import ResetPassword from "./components/ResetPassword";
 import Contactus from "./components/Contactus";
 import CreatePost from "./components/CreatePost";
 import AboutUs from "./components/Aboutus";
-import AdminProtect from "./components/Adminprotect";
+import AdminProtect from "./components/AdminProtect";
 import Admin from "./AdminComponents/Admin";
 import FloatingIcons from "./components/FloatingIcons";
 import './styles/Tostify.css';
@@ -43,7 +43,7 @@ function App() {
   return (
     <>
       <Router>
-        {/* <Navbar /> */}
+        <Navbar />
         <div className="container mt-5">
           <Routes>
             <Route path="/" element={<Home />} />
