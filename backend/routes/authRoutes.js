@@ -67,7 +67,6 @@ router.post("/verify-otp", async (req, res) => {
 
 router.post("/register", validateUser, async (req, res) => {
   const { fullName, email, password, reasonToJoin } = req.body;
-  console.log(req.body);
   try {
     let user = await User.findOne({ email });
     if (user) {
