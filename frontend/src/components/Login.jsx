@@ -16,28 +16,36 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      console.log('Attempting login to:', `${import.meta.env.VITE_BACKEND_URL}/api/auth/login`);
+      
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/auth/login`,
         { email, password },
-        { withCredentials: true } // 👈 very important for cookies
+        { 
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
       );
+
+      console.log('Login response:', response);
 
       if (response.status === 200) {
         localStorage.setItem("isLoggedIn", "true");
+        console.log('isLoggedIn set:', localStorage.getItem("isLoggedIn"));
+        
         toast.success('🎉 Welcome back to Last Night Engineering!', {
           className: 'toast-custom',
           icon: false
         });
+        
         setTimeout(() => {
           window.location.href = `${import.meta.env.VITE_FRONTEND_URL}`;
         }, 1000);
-      } else {
-        toast.error("❌ Invalid email or password. Please try again.", {
-          className: 'toast-custom-error',
-          icon: false
-        });
       }
     } catch (error) {
+      console.error('Login error:', error);
       toast.error("❌ Invalid email or password. Please try again.", {
         className: 'toast-custom-error',
         icon: false
