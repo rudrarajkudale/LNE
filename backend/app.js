@@ -22,12 +22,25 @@ connectDB();
 app.use(express.json());
 app.use(cookieParser());
 
+const allowedOrigins = [
+  "https://last-night-engineering.vercel.app",
+  "https://last-night-engineering-ewaregqj1.vercel.app", // preview or custom
+  "http://localhost:5173"
+];
+
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   })
 );
+
 
 app.use(
   session({
