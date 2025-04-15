@@ -16,19 +16,14 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/login`, {
-        email,
-        password,
-      });
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/auth/login`, {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-      const result = await response.json();
-      if (response.ok) {
-        localStorage.setItem("isLoggedIn", "true"); 
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/auth/login`,
+        { email, password },
+        { withCredentials: true } // 👈 very important for cookies
+      );
+
+      if (response.status === 200) {
+        localStorage.setItem("isLoggedIn", "true");
         toast.success('🎉 Welcome back to Last Night Engineering!', {
           className: 'toast-custom',
           icon: false
@@ -37,19 +32,19 @@ const Login = () => {
           window.location.href = `${import.meta.env.VITE_FRONTEND_URL}`;
         }, 1000);
       } else {
-        toast.error("❌Invalid email or password. Please try again.", {
+        toast.error("❌ Invalid email or password. Please try again.", {
           className: 'toast-custom-error',
           icon: false
         });
       }
     } catch (error) {
-      toast.error("❌Invalid email or password. Please try again.", {
+      toast.error("❌ Invalid email or password. Please try again.", {
         className: 'toast-custom-error',
         icon: false
       });
     }
   };
-  
+
   const handleGoogleSignIn = () => {
     localStorage.setItem("isLoggedIn", "true"); 
     toast.success('🎉 Welcome back to Last Night Engineering!', {
