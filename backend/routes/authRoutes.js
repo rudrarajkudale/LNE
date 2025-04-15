@@ -107,8 +107,15 @@ router.post("/login", (req, res, next) => {
   })(req, res, next);
 });
 
-router.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
-router.get("/google/callback", passport.authenticate("google", { failureRedirect: process.env.FRONTEND_URL }), async (req, res) => {
+router.get("/google", passport.authenticate("google", {
+  scope: ["profile", "email"],
+  callbackURL: `${process.env.BACKEND_URL}/api/auth/google/callback`  
+}));
+
+router.get("/google/callback", passport.authenticate("google", { 
+  failureRedirect: `${process.env.FRONTEND_URL}/login`,
+  callbackURL: `${process.env.BACKEND_URL}/api/auth/google/callback` 
+}), async (req, res) => {
     try {
       let user = await User.findOne({ email: req.user.email });
       if (user) {
